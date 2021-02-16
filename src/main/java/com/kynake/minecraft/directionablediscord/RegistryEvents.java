@@ -1,11 +1,10 @@
 package com.kynake.minecraft.directionablediscord;
 
-// Internal
-
 // Minecraft
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+
 // Forge
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -18,9 +17,6 @@ import com.kynake.minecraft.directionablediscord.items.util.BaseModItem;
 // Apache
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-// Java
-
 
 // You can use EventBusSubscriber to automatically subscribe events on the
 // contained class (this is subscribing to the MOD

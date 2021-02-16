@@ -1,4 +1,4 @@
-package com.kynake.minecraft.directionablediscord.setup;
+package com.kynake.minecraft.directionablediscord.setup.proxy;
 
 import net.minecraft.world.World;
 

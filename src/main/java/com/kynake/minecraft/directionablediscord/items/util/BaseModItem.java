@@ -1,10 +1,10 @@
 package com.kynake.minecraft.directionablediscord.items.util;
 
-// External Imports
+// Internal
+import com.kynake.minecraft.directionablediscord.setup.ModSetup;
+
+// Minecraft
 import net.minecraft.item.Item;
-
-// Internal Imports
-
 
 /**
  * Extension of a default minecraft item that superclasses all
@@ -23,10 +23,10 @@ public abstract class BaseModItem extends Item {
   }
 
   private static Item.Properties addDefaultItemProperties(Item.Properties properties) {
-    return properties;
+    return properties
       /* Default properties that every Mod item shares */
 
       // This Mod's Creative Tab
-      // .group(ModSetup.creativeTabGroup);
+      .group(ModSetup.creativeTabGroup);
   }
 }

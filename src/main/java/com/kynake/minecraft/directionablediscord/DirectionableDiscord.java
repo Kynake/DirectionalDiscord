@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @Mod(DirectionableDiscord.ModID)
 public class DirectionableDiscord {
   public final static String ModID = "directionablediscord";
-  private static final Logger LOGGER = LogManager.getLogger();
+  public static final Logger LOGGER = LogManager.getLogger();
 
   public static IProxy proxy  = DistExecutor.runForDist(
       () -> () -> new ClientProxy(), // Clientside instance of proxy

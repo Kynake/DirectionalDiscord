@@ -1,19 +1,16 @@
 package com.kynake.minecraft.directionablediscord.blocks.util;
 
-// External Imports
+// Internal
+import com.kynake.minecraft.directionablediscord.DirectionableDiscord;
+import com.kynake.minecraft.directionablediscord.blocks.*;
+
+// Forge
+import net.minecraftforge.registries.ObjectHolder;
+
+// Java
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-
-import net.minecraftforge.registries.ObjectHolder;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import com.kynake.minecraft.directionablediscord.DirectionableDiscord;
-// Internal Imports
-import com.kynake.minecraft.directionablediscord.blocks.*;
-
 /**
  * Helper class that lists all block created by this mod and possibly
  * blocks from other mods that are of interest to this mod
@@ -27,7 +24,6 @@ public class BlockLists {
   @ObjectHolder(DirectionableDiscord.ModID + ":speaker")  public static Speaker SPEAKER;
 
   // Other attributes
-  private static final Logger LOGGER = LogManager.getLogger();
   private static ArrayList<BaseModBlock> blocksCache = null;
 
   // Methods
@@ -59,7 +55,7 @@ public class BlockLists {
         BaseModBlock blockInstance = (BaseModBlock) field.getType().getDeclaredConstructor().newInstance();
         blocksListed.add(blockInstance);
       } catch(InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-        LOGGER.warn(String.format("WARNING: Block field %s could not be reflectively accessed.", field.getName()), e);
+        DirectionableDiscord.LOGGER.warn(String.format("WARNING: Block field %s could not be reflectively accessed.", field.getName()), e);
       }
     }
 

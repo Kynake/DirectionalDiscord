@@ -14,16 +14,11 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import com.kynake.minecraft.directionablediscord.blocks.util.BlockLists;
 import com.kynake.minecraft.directionablediscord.items.util.BaseModItem;
 
-// Apache
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 // You can use EventBusSubscriber to automatically subscribe events on the
 // contained class (this is subscribing to the MOD
 // Event bus for receiving Registry Events)
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RegistryEvents {
-  private static final Logger LOGGER = LogManager.getLogger();
 
   // Events
   @SubscribeEvent
@@ -32,7 +27,7 @@ public class RegistryEvents {
     IForgeRegistry<Block> registry = blockRegistryEvent.getRegistry();
 
     BlockLists.getBlockInstances().forEach(block -> registry.register(block));
-    LOGGER.info("Blocks Registered");
+    DirectionableDiscord.LOGGER.info("Blocks Registered");
   }
 
   @SubscribeEvent
@@ -48,6 +43,6 @@ public class RegistryEvents {
       Item blockItem = new BlockItem(block, properties).setRegistryName(block.getRegistryName());
       registry.register(blockItem);
     });
-    LOGGER.info("BlockItems Registered");
+    DirectionableDiscord.LOGGER.info("BlockItems Registered");
   }
 }

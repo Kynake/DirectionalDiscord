@@ -8,8 +8,6 @@ import com.kynake.minecraft.directionablediscord.blocks.util.BlockLists;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 
-// Internal Imports
-
 public class ModSetup {
 
   public static ItemGroup creativeTabGroup = new ItemGroup(DirectionableDiscord.ModID) {

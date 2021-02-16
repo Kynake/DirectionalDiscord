@@ -2,14 +2,9 @@ package com.kynake.minecraft.directionablediscord;
 
 // Internal
 import com.kynake.minecraft.directionablediscord.setup.ModSetup;
-import com.kynake.minecraft.directionablediscord.setup.proxy.ClientProxy;
-import com.kynake.minecraft.directionablediscord.setup.proxy.IProxy;
-import com.kynake.minecraft.directionablediscord.setup.proxy.ServerProxy;
 
 // Forge
 import net.minecraftforge.common.MinecraftForge;
-
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -30,11 +25,6 @@ import java.util.stream.Collectors;
 public class DirectionableDiscord {
   public final static String ModID = "directionablediscord";
   public static final Logger LOGGER = LogManager.getLogger();
-
-  public static IProxy proxy  = DistExecutor.runForDist(
-      () -> () -> new ClientProxy(), // Clientside instance of proxy
-      () -> () -> new ServerProxy()  // Serverside instance of proxy
-  );
 
   public static ModSetup setup = new ModSetup();
 

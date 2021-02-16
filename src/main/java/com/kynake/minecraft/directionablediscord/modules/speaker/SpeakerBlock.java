@@ -1,14 +1,13 @@
-package com.kynake.minecraft.directionablediscord.blocks;
+package com.kynake.minecraft.directionablediscord.modules.speaker;
 
-// Internal
-import com.kynake.minecraft.directionablediscord.blocks.util.BaseModBlock;
+import com.kynake.minecraft.directionablediscord.modules.base.block.BaseModBlock;
 
 // Minecraft
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-public class Speaker extends BaseModBlock {
+public class SpeakerBlock extends BaseModBlock {
 
-  public Speaker() {
+  public SpeakerBlock() {
     super(Properties
       .create(Material.WOOD)
       .sound(SoundType.WOOD)

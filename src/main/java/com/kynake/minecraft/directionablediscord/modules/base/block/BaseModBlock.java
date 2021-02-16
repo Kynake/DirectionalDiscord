@@ -1,4 +1,4 @@
-package com.kynake.minecraft.directionablediscord.blocks.util;
+package com.kynake.minecraft.directionablediscord.modules.base.block;
 
 // Internal
 
@@ -10,25 +10,25 @@ import net.minecraft.block.Block;
  * blocks created in this mod
  */
 public abstract class BaseModBlock extends Block {
-  protected ItemType itemType = ItemType.DEFAULT;
+  public BlockItemType itemType = BlockItemType.DEFAULT;
 
   public BaseModBlock(Properties properties) {
     super(properties);
   }
 
-  public ItemType getItemType() {
+  public BlockItemType getItemType() {
     return this.itemType;
   }
 
   public boolean hasNoItem() {
-    return this.itemType == ItemType.NONE;
+    return this.itemType == BlockItemType.NONE;
   }
 
   public boolean hasDefaultItem() {
-    return this.itemType == ItemType.DEFAULT;
+    return this.itemType == BlockItemType.DEFAULT;
   }
 
   public boolean hasCustomItem() {
-    return this.itemType == ItemType.CUSTOM;
+    return this.itemType == BlockItemType.CUSTOM;
   }
 }

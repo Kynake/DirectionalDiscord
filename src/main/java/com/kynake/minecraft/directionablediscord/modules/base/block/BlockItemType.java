@@ -1,4 +1,4 @@
-package com.kynake.minecraft.directionablediscord.blocks.util;
+package com.kynake.minecraft.directionablediscord.modules.base.block;
 
 /**
  * Enum with possible states a block can have when pertaining to it's item form:
@@ -6,4 +6,4 @@ package com.kynake.minecraft.directionablediscord.blocks.util;
  * - It has a standard block-in-item-form item
  * - It has a custom item, to be defined elsewhere
  */
-public enum ItemType { NONE, DEFAULT, CUSTOM }
+public enum BlockItemType { NONE, DEFAULT, CUSTOM }

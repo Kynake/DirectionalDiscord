@@ -1,4 +1,9 @@
-package com.kynake.minecraft.directionablediscord;
+package com.kynake.minecraft.directionablediscord.setup;
+
+// Internal
+import com.kynake.minecraft.directionablediscord.DirectionableDiscord;
+import com.kynake.minecraft.directionablediscord.modules.base.item.BaseModItem;
+import com.kynake.minecraft.directionablediscord.modules.lists.BlockLists;
 
 // Minecraft
 import net.minecraft.block.Block;
@@ -8,17 +13,14 @@ import net.minecraft.item.Item;
 // Forge
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.RegistryEvent; // MOD Bus Event
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-
-import com.kynake.minecraft.directionablediscord.blocks.util.BlockLists;
-import com.kynake.minecraft.directionablediscord.items.util.BaseModItem;
 
 // You can use EventBusSubscriber to automatically subscribe events on the
 // contained class (this is subscribing to the MOD
 // Event bus for receiving Registry Events)
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
-public class RegistryEvents {
+@Mod.EventBusSubscriber(modid = DirectionableDiscord.ModID, bus = Mod.EventBusSubscriber.Bus.MOD)
+public class RegistrySetup {
 
   // Events
   @SubscribeEvent

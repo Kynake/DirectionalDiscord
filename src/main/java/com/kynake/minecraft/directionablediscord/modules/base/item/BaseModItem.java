@@ -1,7 +1,7 @@
-package com.kynake.minecraft.directionablediscord.items.util;
+package com.kynake.minecraft.directionablediscord.modules.base.item;
 
 // Internal
-import com.kynake.minecraft.directionablediscord.setup.ModSetup;
+import com.kynake.minecraft.directionablediscord.setup.CommonSetup;
 
 // Minecraft
 import net.minecraft.item.Item;
@@ -27,6 +27,6 @@ public abstract class BaseModItem extends Item {
       /* Default properties that every Mod item shares */
 
       // This Mod's Creative Tab
-      .group(ModSetup.creativeTabGroup);
+      .group(CommonSetup.creativeTabGroup);
   }
 }

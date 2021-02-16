@@ -1,8 +1,10 @@
-package com.kynake.minecraft.directionablediscord.blocks.util;
+package com.kynake.minecraft.directionablediscord.modules.lists;
 
 // Internal
 import com.kynake.minecraft.directionablediscord.DirectionableDiscord;
-import com.kynake.minecraft.directionablediscord.blocks.*;
+import com.kynake.minecraft.directionablediscord.modules.base.block.BaseModBlock;
+import com.kynake.minecraft.directionablediscord.modules.base.block.BlockItemType;
+import com.kynake.minecraft.directionablediscord.modules.speaker.SpeakerBlock;
 
 // Forge
 import net.minecraftforge.registries.ObjectHolder;
@@ -21,7 +23,7 @@ import java.util.ArrayList;
 public class BlockLists {
 
   // Block References
-  @ObjectHolder(DirectionableDiscord.ModID + ":speaker")  public static Speaker SPEAKER;
+  @ObjectHolder(DirectionableDiscord.ModID + ":speaker")  public static SpeakerBlock SPEAKER;
 
   // Other attributes
   private static ArrayList<BaseModBlock> blocksCache = null;
@@ -64,18 +66,18 @@ public class BlockLists {
   }
 
   public static ArrayList<BaseModBlock> getBlocksWithNoItem() {
-    return filterByItemType(ItemType.NONE);
+    return filterByItemType(BlockItemType.NONE);
   }
 
   public static ArrayList<BaseModBlock> getBlocksWithDefaultItem() {
-    return filterByItemType(ItemType.DEFAULT);
+    return filterByItemType(BlockItemType.DEFAULT);
   }
 
   public static ArrayList<BaseModBlock> getBlocksWithCustomItem() {
-    return filterByItemType(ItemType.CUSTOM);
+    return filterByItemType(BlockItemType.CUSTOM);
   }
 
-  private static ArrayList<BaseModBlock> filterByItemType(ItemType itemType) {
+  private static ArrayList<BaseModBlock> filterByItemType(BlockItemType itemType) {
     ArrayList<BaseModBlock> filteredList = new ArrayList<BaseModBlock>(getBlockInstances());
     filteredList.removeIf(block -> block.itemType != itemType);
     return filteredList;

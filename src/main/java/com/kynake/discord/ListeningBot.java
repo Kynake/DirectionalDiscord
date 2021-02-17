@@ -40,19 +40,19 @@ public class ListeningBot extends ListenerAdapter {
   public ListeningBot(Consumer<byte[]> handler) {
     String token = Secrets.token;
     try {
-      jda = JDABuilder.create(token, GatewayIntent.GUILD_VOICE_STATES).build();
+      jda = JDABuilder.create(token, GatewayIntent.GUILD_VOICE_STATES).addEventListeners(this).build();
     } catch(LoginException e) {
       LOGGER.error("Invalid Discord Token");
     }
 
-    Guild targetGuild = jda.getGuildById(Secrets.guildID);
-    if(jda.getGuilds().stream().noneMatch(guild -> guild.getIdLong() == targetGuild.getIdLong())) {
-      LOGGER.error("This Bot is not part of the specified Guild!");
-      shutdown();
-      return;
-    }
+    // TODO: This needs to be checked AFTER the bot has initialized
+    // Guild targetGuild = jda.getGuildById(Secrets.guildID);
+    // if(jda.getGuilds().stream().noneMatch(guild -> guild.getIdLong() == targetGuild.getIdLong())) {
+    //   LOGGER.error("This Bot is not part of the specified Guild!");
+    //   shutdown();
+    //   return;
+    // }
 
-    jda.addEventListener(this);
     this.handler = handler;
   }
 

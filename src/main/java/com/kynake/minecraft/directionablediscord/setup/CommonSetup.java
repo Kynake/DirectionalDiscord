@@ -1,8 +1,11 @@
 package com.kynake.minecraft.directionablediscord.setup;
 
 // Internal
+import com.kynake.discord.ListeningBot;
 import com.kynake.minecraft.directionablediscord.DirectionableDiscord;
+import com.kynake.minecraft.directionablediscord.modules.broadcast.AudioBroadcast;
 import com.kynake.minecraft.directionablediscord.modules.lists.BlockLists;
+import com.kynake.minecraft.directionablediscord.network.Networking;
 
 // Forge
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -20,7 +23,6 @@ public class CommonSetup {
     FMLJavaModLoadingContext.get().getModEventBus().addListener(CommonSetup::onModCommonSetup);
   }
 
-
   public static ItemGroup creativeTabGroup = new ItemGroup(DirectionableDiscord.ModID) {
     @Override
     public ItemStack createIcon() {
@@ -35,12 +37,13 @@ public class CommonSetup {
      * Runs after all blocks, TileEntities, Biomes, etc
      * from all mods have been registered
      */
-    DirectionableDiscord.LOGGER.info("HELLO from common setup");
+    Networking.registerNetworkMessages();
+
   }
 
   @SubscribeEvent
   public static void onServerStarting(FMLServerStartingEvent event) {
-    // do something when the server starts
-    DirectionableDiscord.LOGGER.info("HELLO from server starting");
+    AudioBroadcast broadcaster = new AudioBroadcast();
+    DirectionableDiscord.discordBot = new ListeningBot(broadcaster::sendAudioToAllPlayers);
   }
 }

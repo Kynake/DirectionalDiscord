@@ -1,5 +1,8 @@
 package com.kynake.minecraft.directionablediscord;
 
+// Internal
+import com.kynake.discord.ListeningBot;
+
 // Forge
 import net.minecraftforge.fml.common.Mod;
 
@@ -12,12 +15,12 @@ import org.apache.logging.log4j.Logger;
 public class DirectionableDiscord {
   // Constants
   public final static String ModID = "directionablediscord";
-
   public static final Logger LOGGER = LogManager.getLogger();
+
+  public static ListeningBot discordBot;
 
   public DirectionableDiscord() {
     LOGGER.info("HELLO from Mod Build");
-    
   }
 
 

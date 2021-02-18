@@ -1,5 +1,7 @@
 package com.kynake.minecraft.directionablediscord.modules.broadcast.network;
 
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.network.NetworkDirection;
 // Forge
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -10,6 +12,7 @@ import net.minecraft.network.PacketBuffer;
 import java.util.function.Supplier;
 
 import com.kynake.minecraft.directionablediscord.DirectionableDiscord;
+import com.kynake.minecraft.directionablediscord.setup.ClientSetup;
 
 public class PacketSendAudio {
   private final byte[] audioSample;
@@ -28,7 +31,11 @@ public class PacketSendAudio {
 
   public boolean handle(Supplier<NetworkEvent.Context> context) {
     context.get().enqueueWork(() -> {
-      DirectionableDiscord.LOGGER.debug("PLAYING AUDIO SAMPLE", audioSample);
+      // Make sure we are on the client before playing Audio
+      if(context.get().getDirection().getReceptionSide().isClient()) {
+        DirectionableDiscord.LOGGER.debug("Playing Audio on Client");
+        ClientSetup.clientPlayer.playPCMSample(audioSample);
+      }
     });
 
     return true;

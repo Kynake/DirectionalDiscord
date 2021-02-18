@@ -12,6 +12,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent; // MOD Bus Event
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent; // FORGE Bus Event
+import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 // Minecraft
 import net.minecraft.item.ItemGroup;
@@ -43,7 +44,14 @@ public class CommonSetup {
 
   @SubscribeEvent
   public static void onServerStarting(FMLServerStartingEvent event) {
+    // Start Discord Bot
     AudioBroadcast broadcaster = new AudioBroadcast();
     DirectionableDiscord.discordBot = new ListeningBot(broadcaster::sendAudioToAllPlayers);
+  }
+
+  @SubscribeEvent
+  public static void onServerStopping(FMLServerStoppingEvent event) {
+    // Stop Discord Bot
+    DirectionableDiscord.discordBot.shutdown();
   }
 }

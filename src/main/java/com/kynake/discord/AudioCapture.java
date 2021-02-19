@@ -26,7 +26,7 @@ public class AudioCapture implements AudioReceiveHandler {
 
   @Override
   public void handleUserAudio(UserAudio userAudio) {
-    ListeningBot.LOGGER.debug("Got AudioPacket from user " + userAudio.getUser().getName());
+    // ListeningBot.LOGGER.debug("Got AudioPacket from user " + userAudio.getUser().getName());
     handler.accept(userAudio.getAudioData(1.0f));
   }
 }

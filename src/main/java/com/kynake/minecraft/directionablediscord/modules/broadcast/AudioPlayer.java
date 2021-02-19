@@ -18,9 +18,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class AudioPlayer implements Runnable {
-  // private static final int bufferSize = 4096;
   private static final Logger LOGGER = LogManager.getLogger();
 
+  // TODO: find a better way to get this value without hardcoding it
+  // This is the constant size of the byte[]'s sent over by the Discord Bot
+  private static final int bufferSize = 3840;
   private SourceDataLine audioLine;
 
   // Written by the Main Thread, Read from by the Audio Thread
@@ -59,11 +61,14 @@ public class AudioPlayer implements Runnable {
     while(audioLine.isOpen()) { // Keep the Thread open while we process audio
       byte[] nextSample =  pcmBuffer.poll();
       if(nextSample != null) {
-        // if(pcmSample.length % AudioReceiveHandler.OUTPUT_FORMAT.getFrameSize() != 0) {
-        //   // pad frame
-        // }
-
+        // Add next buffered sample to audioLine
         audioLine.write(nextSample, 0, nextSample.length);
+      } else if(audioLine.available() < audioLine.getBufferSize()) {
+        // If no new buffered sample has come in since last iteration, playout the remaining buffer on the audioLine
+        audioLine.drain();
+      } else {
+        // If both buffers are empty, it's safe to discard whatever leftover data there might still be there
+        audioLine.flush();
       }
     }
 
@@ -81,8 +86,7 @@ public class AudioPlayer implements Runnable {
   }
 
   private SourceDataLine createDataLine() {
-    // DataLine.Info info = new DataLine.Info(SourceDataLine.class, AudioReceiveHandler.OUTPUT_FORMAT, bufferSize); // Size specifier needed?
-    DataLine.Info info = new DataLine.Info(SourceDataLine.class, AudioReceiveHandler.OUTPUT_FORMAT);
+    DataLine.Info info = new DataLine.Info(SourceDataLine.class, AudioReceiveHandler.OUTPUT_FORMAT, bufferSize);
 
     if(!AudioSystem.isLineSupported(info)) {
       LOGGER.debug("Dataline not supported!", info);

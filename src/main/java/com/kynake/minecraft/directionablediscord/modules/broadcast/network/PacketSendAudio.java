@@ -33,7 +33,6 @@ public class PacketSendAudio {
     context.get().enqueueWork(() -> {
       // Make sure we are on the client before playing Audio
       if(context.get().getDirection().getReceptionSide().isClient()) {
-        DirectionableDiscord.LOGGER.debug("Playing Audio on Client");
         ClientSetup.clientPlayer.playPCMSample(audioSample);
       }
     });

@@ -1,7 +1,8 @@
 package com.kynake.minecraft.directionablediscord.modules.broadcast.network;
 
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.network.NetworkDirection;
+// Internal
+import com.kynake.minecraft.directionablediscord.setup.ClientSetup;
+
 // Forge
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -11,8 +12,6 @@ import net.minecraft.network.PacketBuffer;
 // Java
 import java.util.function.Supplier;
 
-import com.kynake.minecraft.directionablediscord.DirectionableDiscord;
-import com.kynake.minecraft.directionablediscord.setup.ClientSetup;
 
 public class PacketSendAudio {
   private final byte[] audioSample;

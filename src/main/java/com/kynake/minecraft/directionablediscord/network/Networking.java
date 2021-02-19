@@ -1,16 +1,16 @@
 package com.kynake.minecraft.directionablediscord.network;
 
+// Internal
+import com.kynake.minecraft.directionablediscord.DirectionableDiscord;
+import com.kynake.minecraft.directionablediscord.modules.broadcast.network.PacketSendAudio;
+
 // Forge
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
-import com.kynake.minecraft.directionablediscord.DirectionableDiscord;
-import com.kynake.minecraft.directionablediscord.modules.broadcast.network.PacketSendAudio;
-
 // Minecraft
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 
 

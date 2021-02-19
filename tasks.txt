@@ -1,0 +1,15 @@
+- Test on multiplayer
+
+- Implement commands on discord and minecraft
+
+- Map minecraft account to discord account:
+  user types command '/verify <Minecraft Username>' on a DM to the discord bot
+  bot find the player in the server, from <Minecraft Username> and register a verification attempt (no user: error, already verified: error)
+  player on server receives notification of new discord verification attempt, and types /discord_voice verify <confirm/deny> to finish the request
+  server registers (and stores on file (.json?)) a map of minecraft UUID's to discord UserID's, so that the already verified players dont have to do it every time they relog
+
+- On Broadcast Audio: do not send audio packets to the player whose UUID is mapped to the received audio's Discord UserID (AKA dont echo a users voice back, send it only to other players)
+
+- Discover how to play multiple voice sources at once (Java Mixer maybe?)
+
+- Define necessary info for the bot (Token, ServerID, VoiceChannelID, etc) and store them on a file in the game root folder (create file on first run?, Look into how MC Configs work)

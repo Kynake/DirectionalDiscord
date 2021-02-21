@@ -2,6 +2,7 @@ package com.kynake.minecraft.directionablediscord;
 
 // Internal
 import com.kynake.discord.ListeningBot;
+import com.kynake.minecraft.directionablediscord.config.Config;
 
 // Forge
 import net.minecraftforge.fml.common.Mod;
@@ -21,6 +22,14 @@ public class DirectionableDiscord {
 
   public DirectionableDiscord() {
     LOGGER.info("HELLO from Mod Build");
+    Config.acquireConfigs();
+
+    LOGGER.debug(Config.isConfigured);
+    LOGGER.debug(Config.DISCORD_TOKEN);
+    LOGGER.debug(Config.DISCORD_GUILD_ID);
+    LOGGER.debug(Config.DISCORD_VOICE_CHANNEL_ID);
+    LOGGER.debug(Config.VERIFIED_USERS);
+
   }
 
 

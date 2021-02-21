@@ -1,0 +1,17 @@
+{
+  // DO NOT SHARE THIS FILE
+  // Your Discord Bot token is SECRET! If someone untrustworthy gets access to it, they could mess with your discord server!
+  // If you believe your Token has been exposed, go to https://discord.com/developers/applications, find and click on your bot in the list, go to the 'bot' menu, and regenerate your token
+  "discord_token": "BOT_TOKEN_HERE",
+
+  // Please follow the instructions here: <LINK> on how to get the Server and Voice Channel Id's
+  "discord_server_id": "SERVER_ID_HERE",
+  "discord_voice_channel_id": "VOICE_CHANNEL_ID_HERE",
+
+  // Users that have verified their Discord user with their Minecraft user will be listed here
+  // You can manually verify a user by adding an entry to this list in the following format:
+  // { "name": "Minecraft_User", "uuid": "Minecraft_User_UUID", "discord_id": "Discord_User_ID" }
+  "verified_users": [
+
+  ]
+}

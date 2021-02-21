@@ -1,5 +1,8 @@
 package com.kynake.minecraft.directionablediscord.config;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 // Google
 import com.google.gson.stream.JsonReader;
 
@@ -9,140 +12,90 @@ import org.apache.logging.log4j.Logger;
 
 // Java
 import java.util.ArrayList;
+import java.util.Map;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 public class Config {
-  public static class VerifiedUser {
-    public String NAME;
-    public String MINECRAFT_UUID;
-    public String DISCORD_ID;
-  }
+  // Static Fields
+  private static final Logger LOGGER = LogManager.getLogger();
 
   private static final String configPath = "discord-voice.jsonc";
   private static final String templatePath = "/assets/directionablediscord/dd-config-template.jsonc";
 
-  private static final Logger LOGGER = LogManager.getLogger();
+  private static Config instance = null;
 
-  // Config values
-  public static boolean isConfigured = false;
-  public static String DISCORD_TOKEN;
-  public static String DISCORD_GUILD_ID;
-  public static String DISCORD_VOICE_CHANNEL_ID;
-  public static ArrayList<VerifiedUser> VERIFIED_USERS;
+  public static String getToken() {
+    return instance == null? null : instance.discord_token;
+  }
 
-  public static void acquireConfigs() {
+  public static String getServerID() {
+    return instance == null? null : instance.discord_server_id;
+  }
+
+  public static String getVoiceChannelID() {
+    return instance == null? null : instance.discord_voice_channel_id;
+  }
+
+  public static Map<String, String> getVerifiedUsers() {
+    return instance == null? null : instance.verified_users;
+  }
+
+  // public void setVerifiedUsers(Map<String, String> verifiedUsers) {
+  //   verified_users = verifiedUsers;
+  // }
+
+  public Map<String, String> getVerified_users() {
+    return verified_users;
+  }
+
+  public static void acquireConfigs() throws IOException {
     File config = new File(configPath);
-    if(config.exists()) {
-      if(config.isDirectory()) {
-        LOGGER.error(configPath + "Exists and is a Folder!");
-        isConfigured = false;
-      } else {
-        acquireFromFile(config);
+    if (config.isDirectory()) {
+      LOGGER.error(configPath + "Exists and is a Folder!");
+    } else if (config.exists()) {
+      Gson gson = new GsonBuilder().setLenient().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
+
+      try {
+        instance = gson.fromJson(new FileReader(config), Config.class);
+      } catch (FileNotFoundException e) {
+        LOGGER.fatal("Cannot read config file!");
+        e.printStackTrace();
+        throw new IOException("Cannot read config file!");
       }
     } else {
-      createFromTemplate();
+      copyTemplate();
     }
   }
 
-  public static void addVerifiedUser(VerifiedUser user) {
-
-  }
-
-  private static void acquireFromFile(File configFile) {
+  public static void copyTemplate() {
     try {
-      InputStream stream = new FileInputStream(configFile);
-      populateAttributes(stream);
-      isConfigured = true;
-    } catch(FileNotFoundException e) { // Should never happen
+      InputStream input = Config.class.getResourceAsStream(templatePath);
+      Files.copy(input, Paths.get(configPath));
+    } catch (IOException e) {
+      LOGGER.error("Cannot create config file!");
       e.printStackTrace();
-      isConfigured = false;
     }
   }
 
-  private static void createFromTemplate() {
-    try {
-      InputStream inputStream = Config.class.getResourceAsStream(templatePath);
-      FileOutputStream newConfig = new FileOutputStream(configPath, false);
-      byte[] buffer = new byte[1024];
-      int bytesRead;
-      while ((bytesRead = inputStream.read(buffer)) != -1) {
-        newConfig.write(buffer, 0, bytesRead);
-      }
-
-      inputStream.close();
-      newConfig.close();
-
-    } catch(IOException e) {
-      LOGGER.fatal("Cannot create/write config file!");
-      e.printStackTrace();
-
-    } finally {
-      isConfigured = false;
-    }
+  public static void addVerifiedUser(String uuid, String discordID) {
 
   }
 
-  private static void populateAttributes(InputStream jsonStream) {
-    JsonReader reader = new JsonReader(new InputStreamReader(jsonStream));
-    reader.setLenient(true); // Allow comments in the JSON file
-    try {
-      reader.beginObject();
-      while(reader.hasNext()) { // Root object
-        switch(reader.nextName()) {
-          case "discord_token":
-            DISCORD_TOKEN = reader.nextString();
-            break;
+  // Object Fields
+  public String discord_token;
+  public String discord_server_id;
+  public String discord_voice_channel_id;
+  public Map<String, String> verified_users;
 
-          case "discord_server_id":
-            DISCORD_GUILD_ID = reader.nextString();
-            break;
-
-          case "discord_voice_channel_id":
-            DISCORD_VOICE_CHANNEL_ID = reader.nextString();
-            break;
-
-          case "verified_users":
-            VERIFIED_USERS = new ArrayList<>();
-
-            reader.beginArray();
-            while(reader.hasNext()) { // User array
-              reader.beginObject();
-              VerifiedUser user = new VerifiedUser();
-
-              while(reader.hasNext()) { // User object
-                switch(reader.nextName()) {
-                  case "name":
-                    user.NAME = reader.nextString();
-                    break;
-
-                  case "uuid":
-                    user.MINECRAFT_UUID = reader.nextString();
-                    break;
-
-                  case "discord_id":
-                    user.DISCORD_ID = reader.nextString();
-                    break;
-                }
-              }
-
-              VERIFIED_USERS.add(user);
-              reader.endObject();
-            }
-            reader.endArray();
-            break;
-        }
-      }
-    } catch(IOException e) {
-      LOGGER.error("Error reading config file!");
-      isConfigured = false;
-    }
-
-  }
+  private Config() { }
 }

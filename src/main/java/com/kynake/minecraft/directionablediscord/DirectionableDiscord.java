@@ -11,6 +11,9 @@ import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+// Java
+import java.io.IOException;
+
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(DirectionableDiscord.ModID)
 public class DirectionableDiscord {
@@ -20,16 +23,14 @@ public class DirectionableDiscord {
 
   public static ListeningBot discordBot;
 
-  public DirectionableDiscord() {
+  public DirectionableDiscord() throws IOException {
     LOGGER.info("HELLO from Mod Build");
     Config.acquireConfigs();
 
-    LOGGER.debug(Config.isConfigured);
-    LOGGER.debug(Config.DISCORD_TOKEN);
-    LOGGER.debug(Config.DISCORD_GUILD_ID);
-    LOGGER.debug(Config.DISCORD_VOICE_CHANNEL_ID);
-    LOGGER.debug(Config.VERIFIED_USERS);
-
+    LOGGER.info(Config.getToken());
+    LOGGER.info(Config.getServerID());
+    LOGGER.info(Config.getVoiceChannelID());
+    LOGGER.info(Config.getVerifiedUsers());
   }
 
 

@@ -83,31 +83,31 @@ public class Config {
    * Adds a new User to the list of verified users,
    * and attempts to sync those changes to the config file.
    *
-   * @param uuid The UUID of the Minecraft user to be added
    * @param discordID The UserID of the correspondig user on Discord
+   * @param uuid The UUID of the Minecraft user to be added
    */
-  public static void addVerifiedUser(String uuid, String discordID) {
+  public static void addVerifiedUser(String discordID, String uuid) {
     if(instance == null) {
       LOGGER.error("Cannot add verified user, config was not initialized!");
       return;
     }
 
-    instance.verified_users.put(uuid, discordID);
+    instance.verified_users.put(discordID, uuid);
     syncVerifiedUserConfigFile();
   }
 
   /**
    * Removes an existing User from the list of verified users
    *
-   * @param uuid The UUID of the Minecraft user to remove
+   * @param discordID The UserID of the user on Discord to remove
    */
-  public static void removeVerifiedUser(String uuid) {
+  public static void removeVerifiedUser(String discordID) {
     if(instance == null) {
       LOGGER.error("Cannot remove verified user, config was not initialized!");
       return;
     }
 
-    instance.verified_users.remove(uuid);
+    instance.verified_users.remove(discordID);
     syncVerifiedUserConfigFile();
   }
 

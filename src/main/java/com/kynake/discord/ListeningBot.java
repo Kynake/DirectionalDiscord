@@ -1,5 +1,8 @@
 package com.kynake.discord;
 
+// Internal
+import com.kynake.minecraft.directionablediscord.config.Config;
+
 // JDA
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -28,21 +31,21 @@ public class ListeningBot extends ListenerAdapter {
   public static Guild getGuild() {
     return jda == null?
       null :
-      jda.getGuildById(Secrets.guildID);
+      jda.getGuildById(Config.getServerID());
   }
 
   public static VoiceChannel getVoiceChannel() {
     return jda == null?
       null :
-      jda.getVoiceChannelById(Secrets.voiceChannelID);
+      jda.getVoiceChannelById(Config.getVoiceChannelID());
   }
 
   public ListeningBot(Consumer<byte[]> handler) {
-    String token = Secrets.token;
     try {
-      jda = JDABuilder.create(token, GatewayIntent.GUILD_VOICE_STATES).addEventListeners(this).build();
+      jda = JDABuilder.create(Config.getToken(), GatewayIntent.GUILD_VOICE_STATES).addEventListeners(this).build();
     } catch(LoginException e) {
       LOGGER.error("Invalid Discord Token");
+      return;
     }
 
     // TODO: This needs to be checked AFTER the bot has initialized

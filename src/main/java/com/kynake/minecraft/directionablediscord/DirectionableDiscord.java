@@ -27,7 +27,6 @@ public class DirectionableDiscord {
     LOGGER.info("HELLO from Mod Build");
     Config.acquireConfigs();
 
-    LOGGER.info(Config.getToken());
     LOGGER.info(Config.getServerID());
     LOGGER.info(Config.getVoiceChannelID());
     LOGGER.info(Config.getVerifiedUsers());

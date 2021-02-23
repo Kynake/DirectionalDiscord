@@ -10,8 +10,8 @@
 
   // Users that have verified their Discord user with their Minecraft user will be listed here
   // You can manually verify a user by adding an entry to this list in the following format:
-  // "Minecraft_UUID": "Discord_UserID"
-  // Follow the instructions here: <LINK> to learn how to find out your Minecraft UUID and Discord UserID
+  // "Discord_UserID": "Minecraft_UUID"
+  // Follow the instructions here: <LINK> to learn how to find out your Discord UserID and Minecraft UUID
   "verified_users": {
 
   }

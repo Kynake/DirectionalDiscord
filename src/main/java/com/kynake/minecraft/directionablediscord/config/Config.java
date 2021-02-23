@@ -38,19 +38,19 @@ public class Config {
   private static Config instance = null;
 
   public static String getToken() {
-    return instance == null? null : instance.discord_token;
+    return isConfigured()? instance.discord_token : null;
   }
 
   public static String getServerID() {
-    return instance == null? null : instance.discord_server_id;
+    return isConfigured()? instance.discord_server_id : null;
   }
 
   public static String getVoiceChannelID() {
-    return instance == null? null : instance.discord_voice_channel_id;
+    return isConfigured()? instance.discord_voice_channel_id : null;
   }
 
   public static Map<String, String> getVerifiedUsers() {
-    return instance == null? null : instance.verified_users;
+    return isConfigured()? instance.verified_users : null;
   }
 
   /**
@@ -75,8 +75,13 @@ public class Config {
         throw new IOException("Cannot read config file!");
       }
     } else {
+      instance = null;
       copyTemplate();
     }
+  }
+
+  public static boolean isConfigured() {
+    return instance != null;
   }
 
   /**

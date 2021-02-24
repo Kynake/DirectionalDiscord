@@ -3,6 +3,7 @@ package com.kynake.minecraft.directionablediscord.modules.broadcast;
 // Forge
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
+import com.kynake.minecraft.directionablediscord.config.Config;
 import com.kynake.minecraft.directionablediscord.modules.broadcast.network.PacketSendAudio;
 import com.kynake.minecraft.directionablediscord.network.Networking;
 
@@ -20,7 +21,14 @@ public class AudioBroadcast {
     }
   }
 
-  public void sendAudioToAllPlayers(byte[] audioSample) {
-    serverInstance.getPlayerList().getPlayers().forEach(player -> Networking.sendToClient(new PacketSendAudio(audioSample), player));
+  public void sendAudioToOtherPlayers(byte[] audioSample, String discordUserID) {
+    String minecraftUUID = Config.getVerifiedUsers().get(discordUserID);
+    serverInstance.getPlayerList().getPlayers().forEach(player -> {
+      if(player.getUniqueID().toString().equalsIgnoreCase(minecraftUUID)) {
+        return;
+      }
+
+      Networking.sendToClient(new PacketSendAudio(audioSample), player);
+    });
   }
 }

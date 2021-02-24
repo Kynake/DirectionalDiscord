@@ -1,6 +1,7 @@
 package com.kynake.discord;
 
 // Internal
+import com.kynake.discord.audio.AudioCapture;
 import com.kynake.minecraft.directionablediscord.config.Config;
 
 // JDA
@@ -13,7 +14,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 // Java
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import javax.security.auth.login.LoginException;
 
 // Apache
@@ -25,7 +26,7 @@ public class ListeningBot extends ListenerAdapter {
   public static final Logger LOGGER = LogManager.getLogger();
   public static JDA jda = null;
 
-  private Consumer<byte[]> handler;
+  private BiConsumer<byte[], String> handler;
   private AudioCapture capturer;
 
   public static Guild getGuild() {
@@ -40,7 +41,7 @@ public class ListeningBot extends ListenerAdapter {
       jda.getVoiceChannelById(Config.getVoiceChannelID());
   }
 
-  public ListeningBot(Consumer<byte[]> handler) {
+  public ListeningBot(BiConsumer<byte[], String> handler) {
     try {
       jda = JDABuilder.create(Config.getToken(), GatewayIntent.GUILD_VOICE_STATES).addEventListeners(this).build();
     } catch(LoginException e) {

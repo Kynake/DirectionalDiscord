@@ -46,7 +46,7 @@ public class CommonSetup {
   public static void onServerStarting(FMLServerStartingEvent event) {
     // Start Discord Bot
     AudioBroadcast broadcaster = new AudioBroadcast();
-    DirectionableDiscord.discordBot = new ListeningBot(broadcaster::sendAudioToAllPlayers);
+    DirectionableDiscord.discordBot = new ListeningBot(broadcaster::sendAudioToOtherPlayers);
   }
 
   @SubscribeEvent

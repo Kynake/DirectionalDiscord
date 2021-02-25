@@ -19,6 +19,10 @@ archivesBaseName = 'directionablediscord'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
+repositories {
+    jcenter()
+}
+
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
     // The mappings can be changed at any time, and must be in the following format.
@@ -98,7 +102,7 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.16.5-36.0.22'
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
-    compile files('libs/JDA-4.2.0_168-withDependencies.jar')
+    compile 'net.dv8tion:JDA:4.2.0_168'
 
     // Real examples
     // compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env

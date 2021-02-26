@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath "com.github.jengelman.gradle.plugins:shadow:4.0.4"
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
     }
 }
 
@@ -126,9 +126,9 @@ shadowJar {
     relocate 'tomp2p',                          'kynshadow.tomp2p'
 
     // relocate 'net.dv8tion',                     'kynshadow.net.dv8tion'
-    relocate('com.sun.jna', 'kynshadow.com.sun.jna') {
-        include '**.*.class'
-    }
+    // relocate('com.sun.jna', 'kynshadow.com.sun.jna') { // Seem to not be working
+    //     include '**.*.class'
+    // }
 
 }
 
@@ -151,8 +151,8 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.16.5-36.0.22'
 
     // JDA
-    embed("net.dv8tion:JDA:4.2.0_227") {
-        exclude group: 'okhttp3', module: "okhttp"
+    embed('net.dv8tion:JDA:4.2.0_227') {
+        exclude group: 'okhttp3', module: 'okhttp'
     }
     embed 'com.squareup.okhttp3:okhttp:4.9.0'
     embed 'club.minnced:discord-webhooks:0.5.4'
@@ -177,14 +177,14 @@ dependencies {
 jar {
     manifest {
         attributes([
-            "Maven-Artifact"           : "${project.group}:${project.archivesBaseName}:${project.version}",
-            "Specification-Title"      : "directionablediscord",
-            "Specification-Vendor"     : "kynake",
-            "Specification-Version"    : "1", // We are version 1 of ourselves
-            "Implementation-Title"     : project.name,
-            "Implementation-Version"   : "${version}",
-            "Implementation-Vendor"    :"kynake",
-            "Implementation-Timestamp" : new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+            'Maven-Artifact'           : "${project.group}:${project.archivesBaseName}:${project.version}",
+            'Specification-Title'      : "directionablediscord",
+            'Specification-Vendor'     : "kynake",
+            'Specification-Version'    : "1", // We are version 1 of ourselves
+            'Implementation-Title'     : project.name,
+            'Implementation-Version'   : "${version}",
+            'Implementation-Vendor'    :"kynake",
+            'Implementation-Timestamp' : new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 }

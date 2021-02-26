@@ -108,25 +108,27 @@ shadowJar {
     classifier ''
     configurations = [project.configurations.embed]
 
+    def shadowPrefix = "${project.group}.shadow"
     // TODO really handle these relocations
 
     // JDA lib Relocations
-    relocate 'club.minnced',                    'kynshadow.club.minnced'
-    relocate 'com.fasterxml',                   'kynshadow.com.fasterxml'
-    relocate 'com.iwebpp',                      'kynshadow.com.iwebpp'
-    relocate 'com.neovisionaries',              'kynshadow.com.neovisionaries'
-    relocate 'gnu',                             'kynshadow.gnu'
-    relocate 'javax.annotation',                'kynshadow.javax.annotation'
-    relocate 'okhttp3',                         'kynshadow.okhttp'
-    relocate 'okio',                            'kynshadow.okio'
-    relocate 'org.apache.commons.collections4', 'kynshadow.org.apache.commons.collections4'
-    relocate 'org.intellij',                    'kynshadow.org.intellij'
-    relocate 'org.jetbrains',                   'kynshadow.org.jetbrains'
-    relocate 'org.slf4j',                       'kynshadow.org.slf4j'
-    relocate 'tomp2p',                          'kynshadow.tomp2p'
+    relocate "club.minnced",                    "${shadowPrefix}.club.minnced"
+    relocate "com.fasterxml",                   "${shadowPrefix}.com.fasterxml"
+    relocate "com.iwebpp",                      "${shadowPrefix}.com.iwebpp"
+    relocate "com.neovisionaries",              "${shadowPrefix}.com.neovisionaries"
+    relocate "gnu",                             "${shadowPrefix}.gnu"
+    relocate "javax.annotation",                "${shadowPrefix}.javax.annotation"
+    relocate "kotlin",                          "${shadowPrefix}.kotlin"
+    relocate "okhttp3",                         "${shadowPrefix}.okhttp"
+    relocate "okio",                            "${shadowPrefix}.okio"
+    relocate "org.apache.commons.collections4", "${shadowPrefix}.org.apache.commons.collections4"
+    relocate "org.intellij",                    "${shadowPrefix}.org.intellij"
+    relocate "org.jetbrains",                   "${shadowPrefix}.org.jetbrains"
+    relocate "org.slf4j",                       "${shadowPrefix}.org.slf4j"
+    relocate "tomp2p",                          "${shadowPrefix}.tomp2p"
+    relocate "net.dv8tion",                     "${shadowPrefix}.net.dv8tion"
 
-    // relocate 'net.dv8tion',                     'kynshadow.net.dv8tion'
-    // relocate('com.sun.jna', 'kynshadow.com.sun.jna') { // Seem to not be working
+    // relocate("com.sun.jna", "${shadowPrefix}.com.sun.jna") { // Seem to not be working
     //     include '**.*.class'
     // }
 

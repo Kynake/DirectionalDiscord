@@ -44,7 +44,14 @@ public class ListeningBot extends ListenerAdapter {
 
   public ListeningBot(BiConsumer<byte[], String> handler) {
     try {
-      jda = JDABuilder.create(Config.getToken(), GatewayIntent.GUILD_VOICE_STATES).addEventListeners(this).build();
+      jda = JDABuilder.create(Config.getToken(),
+        GatewayIntent.GUILD_MESSAGES,
+        GatewayIntent.GUILD_VOICE_STATES,
+        GatewayIntent.DIRECT_MESSAGES
+      ).addEventListeners(this).build();
+
+      // disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS)
+
     } catch(LoginException e) {
       LOGGER.error("Invalid Discord Token");
       return;

@@ -21,7 +21,7 @@ import java.util.HashMap;
 
 public class CommandHandler extends ListenerAdapter {
   public static final Logger LOGGER = LogManager.getLogger();
-  public static final String prefix = "!";
+  public static final String prefix = "/";
 
   private Map<String, Command> commands;
 
@@ -33,6 +33,7 @@ public class CommandHandler extends ListenerAdapter {
     commands = new HashMap<String, Command>();
 
     // Register Commands
+    createCommand(VerifyUser.class);
 
     LOGGER.info("Created Commands: " + commands.keySet().stream().map(command -> prefix + command).collect(Collectors.joining(", ")));
 

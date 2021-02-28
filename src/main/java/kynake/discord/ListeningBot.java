@@ -26,8 +26,9 @@ public class ListeningBot extends ListenerAdapter {
   public static final Logger LOGGER = LogManager.getLogger();
   public static JDA jda = null;
 
-  private BiConsumer<byte[], String> handler;
+  private BiConsumer<byte[], String> audioHandler;
   private AudioCapture capturer;
+  private CommandHandler commandHandler;
 
   public static Guild getGuild() {
     return jda == null?
@@ -49,15 +50,7 @@ public class ListeningBot extends ListenerAdapter {
       return;
     }
 
-    // TODO: This needs to be checked AFTER the bot has initialized
-    // Guild targetGuild = jda.getGuildById(Secrets.guildID);
-    // if(jda.getGuilds().stream().noneMatch(guild -> guild.getIdLong() == targetGuild.getIdLong())) {
-    //   LOGGER.error("This Bot is not part of the specified Guild!");
-    //   shutdown();
-    //   return;
-    // }
-
-    this.handler = handler;
+    this.audioHandler = handler;
   }
 
   public void shutdown() {
@@ -67,6 +60,23 @@ public class ListeningBot extends ListenerAdapter {
 
   @Override
   public void onReady(ReadyEvent event) {
-    capturer = new AudioCapture(handler);
+    Guild targetGuild = getGuild();
+    if(targetGuild == null || jda.getGuilds().stream().noneMatch(guild -> guild.getIdLong() == targetGuild.getIdLong())) {
+      LOGGER.error("This Bot is not part of the specified Guild!");
+      shutdown();
+      return;
+    }
+
+    try {
+      capturer = new AudioCapture(audioHandler);
+      commandHandler = new CommandHandler();
+    } catch(Exception e) {
+      if(jda != null) {
+        jda.shutdownNow();
+      }
+
+      LOGGER.error("Unhandled Exception on ListeningBot");
+      e.printStackTrace();
+    }
   }
 }

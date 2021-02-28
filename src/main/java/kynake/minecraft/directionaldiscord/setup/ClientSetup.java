@@ -1,9 +1,8 @@
 package kynake.minecraft.directionaldiscord.setup;
 
 // Internal
+import kynake.audio.SimpleAudioPlayer;
 import kynake.minecraft.directionaldiscord.DirectionalDiscord;
-import kynake.minecraft.directionaldiscord.modules.broadcast.AudioPlayer;
-
 // Forge
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,7 +17,7 @@ public class ClientSetup {
     FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::onModClientSetup);
   }
 
-  public static AudioPlayer clientPlayer = null;
+  public static SimpleAudioPlayer clientPlayer = null;
 
   public static void onModClientSetup(FMLClientSetupEvent event) {
     // Runs after onCommonSetup if on Client
@@ -30,7 +29,7 @@ public class ClientSetup {
     if(clientPlayer == null) {
       // Start Audio Player
       DirectionalDiscord.LOGGER.info("Starting new AudioPlayer");
-      clientPlayer = new AudioPlayer();
+      clientPlayer = new SimpleAudioPlayer();
     }
   }
 

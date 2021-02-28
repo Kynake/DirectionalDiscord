@@ -1,4 +1,4 @@
-package kynake.minecraft.directionaldiscord.modules.broadcast;
+package kynake.audio;
 
 // JDA
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
@@ -16,7 +16,8 @@ import javax.sound.sampled.SourceDataLine;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class AudioPlayer implements Runnable {
+// Simply plays the audio wihtout modifications
+public class SimpleAudioPlayer implements Runnable {
   private static final Logger LOGGER = LogManager.getLogger();
 
   // TODO: find a better way to get this value without hardcoding it
@@ -27,7 +28,7 @@ public class AudioPlayer implements Runnable {
   // Written by the Main Thread, Read from by the Audio Thread
   private Queue<byte[]> pcmBuffer = new ConcurrentLinkedQueue<>();
 
-  public AudioPlayer() {
+  public SimpleAudioPlayer() {
     audioLine = createDataLine();
     if(audioLine == null) {
       return;
@@ -43,7 +44,7 @@ public class AudioPlayer implements Runnable {
       return;
     }
 
-    // Add current pcm sample to the queue, which get removed and played in the Audio Thread
+    // Add current pcm sample to the queue, which gets removed and played in the Audio Thread
     pcmBuffer.add(pcmSample);
   }
 

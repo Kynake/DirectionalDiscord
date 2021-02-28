@@ -2,7 +2,7 @@ package com.kynake.discord;
 
 // Internal
 import com.kynake.discord.audio.AudioCapture;
-import com.kynake.minecraft.directionablediscord.config.Config;
+import com.kynake.minecraft.directionaldiscord.config.Config;
 
 // JDA
 import net.dv8tion.jda.api.JDA;

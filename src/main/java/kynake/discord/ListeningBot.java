@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 
 public class ListeningBot extends ListenerAdapter {
-  public static final Logger LOGGER = LogManager.getLogger();
+  private static final Logger LOGGER = LogManager.getLogger();
   public static JDA jda = null;
 
   private BiConsumer<byte[], String> audioHandler;

@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 // Java
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -33,7 +34,7 @@ public class Verify {
   }
 
   private static final Logger LOGGER = LogManager.getLogger();
-  private static Map<String, List<String>> userVerifications = null;
+  private static Map<String, List<String>> userVerifications = new HashMap<String, List<String>>();
 
   private static MinecraftServer serverInstance = null;
   static {
@@ -70,7 +71,7 @@ public class Verify {
     if(!userList.contains(discordTag)) {
       userList.add(discordTag);
     }
-    return VerificationStatus.StillUnverified;
 
+    return VerificationStatus.StillUnverified;
   }
 }

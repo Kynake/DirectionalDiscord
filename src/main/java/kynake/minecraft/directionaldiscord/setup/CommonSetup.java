@@ -45,6 +45,9 @@ public class CommonSetup {
 
   @SubscribeEvent
   public static void onServerStarting(FMLServerStartingEvent event) {
+    // Register Mod Commands
+    CommandSetup.registerCommands(event.getServer().getCommandManager().getDispatcher());
+
     // Start Discord Bot
     AudioBroadcast broadcaster = new AudioBroadcast();
     DirectionalDiscord.discordBot = new ListeningBot(broadcaster::sendAudioToOtherPlayers);

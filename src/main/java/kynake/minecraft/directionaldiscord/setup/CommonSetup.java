@@ -3,6 +3,7 @@ package kynake.minecraft.directionaldiscord.setup;
 // Internal
 import kynake.discord.ListeningBot;
 import kynake.minecraft.directionaldiscord.DirectionalDiscord;
+import kynake.minecraft.directionaldiscord.config.Config;
 import kynake.minecraft.directionaldiscord.modules.broadcast.AudioBroadcast;
 import kynake.minecraft.directionaldiscord.modules.lists.BlockLists;
 import kynake.minecraft.directionaldiscord.network.Networking;
@@ -18,6 +19,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 // Minecraft
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+
+// Java
+import javax.security.auth.login.LoginException;
 
 @Mod.EventBusSubscriber(modid = DirectionalDiscord.ModID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CommonSetup {
@@ -50,12 +54,19 @@ public class CommonSetup {
 
     // Start Discord Bot
     AudioBroadcast broadcaster = new AudioBroadcast();
-    DirectionalDiscord.discordBot = new ListeningBot(broadcaster::sendAudioToOtherPlayers);
+    try {
+      DirectionalDiscord.discordBot = new ListeningBot(broadcaster::sendAudioToOtherPlayers);
+    } catch(LoginException e) {
+      DirectionalDiscord.discordBot = null;
+      Config.Unconfigure();
+    }
   }
 
   @SubscribeEvent
   public static void onServerStopping(FMLServerStoppingEvent event) {
     // Stop Discord Bot
-    DirectionalDiscord.discordBot.shutdown();
+    if(DirectionalDiscord.discordBot != null) {
+      DirectionalDiscord.discordBot.shutdown();
+    }
   }
 }

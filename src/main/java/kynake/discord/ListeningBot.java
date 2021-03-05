@@ -42,7 +42,7 @@ public class ListeningBot extends ListenerAdapter {
       jda.getVoiceChannelById(Config.getVoiceChannelID());
   }
 
-  public ListeningBot(BiConsumer<byte[], String> handler) {
+  public ListeningBot(BiConsumer<byte[], String> handler) throws LoginException {
     try {
       jda = JDABuilder.create(Config.getToken(),
         GatewayIntent.GUILD_MESSAGES,
@@ -52,9 +52,9 @@ public class ListeningBot extends ListenerAdapter {
 
       // disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS)
 
-    } catch(LoginException e) {
-      LOGGER.error("Invalid Discord Token");
-      return;
+    } catch(LoginException | IllegalArgumentException e) {
+      LOGGER.error(e.getMessage());
+      throw new LoginException(e.getMessage());
     }
 
     this.audioHandler = handler;

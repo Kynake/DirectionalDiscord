@@ -45,10 +45,10 @@ public class VerifyUser implements Command {
     String user = args[0];
     switch(Verify.addUserForVerification(event.getAuthor(), user)) {
       case UnknownUser:
-      sendMessage(event,
-        "**" + user + " was not found.**\nMake sure you're logged in to the Minecraft server before attempting to verify your Discord user."
-      );
-      break;
+        sendMessage(event,
+          "**" + user + " was not found.**\nMake sure you're logged in to the Minecraft server before attempting to verify your Discord user."
+        );
+        break;
 
       case AlreadyVerified:
         sendMessage(event,                                                                                                 // TODO: these commands dont exist yet
@@ -70,9 +70,16 @@ public class VerifyUser implements Command {
 
       case StillUnverified:
         sendMessage(event,                                                                                // TODO: this command doesn't exist yet
-          "**Verification request sent.**\nTo complete verification, as " + user + " in the Minecraft server, type `/directionaldiscord verify " + event.getAuthor().getAsTag() + "`"
+          "**Verification request sent.**\nTo complete verification, as " + user + " in the Minecraft server, type `/directionaldiscord verify " + event.getAuthor().getId() + "`"
         );
         break;
+
+      case VerificationComplete:
+        // This should never happen, as you can only START a verification attempt from Discord, but never COMPLETE it.
+        // Completion can only happen from Minecraft's side
+        String errorMessage = "Account Verification was somehow completed from Discord bot's side";
+        LOGGER.error(errorMessage);
+        throw new IllegalStateException(errorMessage);
     }
 
   };

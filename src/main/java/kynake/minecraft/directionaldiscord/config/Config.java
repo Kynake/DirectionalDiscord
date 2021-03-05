@@ -4,36 +4,29 @@ package kynake.minecraft.directionaldiscord.config;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
 
 // Apache
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 // Java
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.EOFException;
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 public class Config {
   // Static Fields
   private static final Logger LOGGER = LogManager.getLogger();
 
-  private static final String configPath = "discord-voice.jsonc";
-  private static final String templatePath = "/assets/directionaldiscord/dd-config-template.jsonc";
+  private static final String configPath = "directional-discord-private-config.json";
+  private static final String templatePath = "/assets/directionaldiscord/dd-config-template.json";
 
   private static Config instance = null;
 
@@ -65,7 +58,7 @@ public class Config {
     if (config.isDirectory()) {
       LOGGER.error(configPath + "Exists and is a Folder!");
     } else if (config.exists()) {
-      Gson gson = new GsonBuilder().setLenient().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
+      Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
 
       try {
         instance = gson.fromJson(new FileReader(config), Config.class);
@@ -82,6 +75,10 @@ public class Config {
 
   public static boolean isConfigured() {
     return instance != null;
+  }
+
+  public static void Unconfigure() {
+    instance = null;
   }
 
   /**
@@ -127,122 +124,136 @@ public class Config {
   }
 
   private static void syncVerifiedUserConfigFile() {
-    long[] offsets = findVerifiedUsersByteOffsets();
-    if(offsets == null) {
-      return;
-    }
+    Gson gson = new GsonBuilder().setPrettyPrinting().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
+    String jsonOutput = gson.toJson(instance);
 
-    String userList = buildVerifiedUsersString();
-    spliceToFile(userList, offsets[0], offsets[1]);
-  }
-
-  private static long[] findVerifiedUsersByteOffsets() { // Find the start and ending bytes of the verified user's object in the config file
-    File config = new File(configPath);
-    if (!config.exists() || config.isDirectory()) {
-      LOGGER.error("Could not sync config file to verified Users!");
-      return null;
-    }
-
-    long startingByte = -1, endingByte = -1;
-
-    try(JsonReader reader = new JsonReader(new FileReader(config))){
-      // To get the byte offsets from the Json object in the file
-      // we need access to the 'pos' variable that JsonReader uses to keep track of where it is on the InputStream
-      Field privatePosField = JsonReader.class.getDeclaredField("pos");
-      privatePosField.setAccessible(true);
-
-      reader.setLenient(true);
-      reader.beginObject();
-      while(reader.hasNext()) {
-        if(!reader.nextName().equals("verified_users")) {
-          reader.skipValue();
-          continue;
-        }
-
-        // Verified Users Object
-        reader.beginObject(); // Right after opening '{'
-        startingByte = privatePosField.getInt(reader) - 1;
-        while(reader.hasNext()) {
-          reader.skipValue();
-        }
-        reader.endObject();
-        endingByte = privatePosField.getInt(reader);
-      }
-    } catch(IOException e) {
-      LOGGER.error("Error reading json from file");
-      e.printStackTrace();
-      return null;
-    } catch(NoSuchFieldException | IllegalAccessException e) {
-      LOGGER.error("Error accessing JsonReader 'pos' field");
-      e.printStackTrace();
-      return null;
-    }
-
-    long[] res = {startingByte, endingByte};
-    return res;
-  }
-
-  private static String buildVerifiedUsersString() {
-    // Rough estimate of how big the final string will be
-    int builderSize = 66 * instance.verified_users.size() + 7;
-    StringBuilder sb = new StringBuilder(builderSize);
-
-    boolean isFirst = true;
-    sb.append("{\n");
-    for(Map.Entry<String, String> verifiedUser : instance.verified_users.entrySet()) {
-      if(isFirst) {
-        isFirst = false;
-      } else {
-        sb.append(",\n");
-      }
-
-      sb.append("    \"" + verifiedUser.getKey() + "\": \"" + verifiedUser.getValue() + "\"");
-    }
-    sb.append("\n  }");
-
-    return sb.toString();
-  }
-
-  private static void spliceToFile(String data, long byteStartOffset, long byteEndOffset) { // Replace Verified user's object string in the config file without changing the rest of it
-    File config = new File(configPath);
-    if (!config.exists() || config.isDirectory()) {
-      LOGGER.error("Could not open config file for rewriting!");
-      return;
-    }
-
-    DataInputStream fis;
-    FileOutputStream fos;
     try {
-      fis = new DataInputStream(new BufferedInputStream(new FileInputStream(config)));
-      List<Byte> bytes = new ArrayList<Byte>(fis.available());
-
-      for(long i = 0; i < byteStartOffset; i++) {
-        bytes.add(fis.readByte());
-      }
-
-      for(Byte stringByte : data.getBytes()) {
-        bytes.add(stringByte);
-      }
-
-      fis.skip(byteEndOffset - byteStartOffset);
-
-      try {
-        while(true) {
-          bytes.add(fis.readByte());
-        }
-      } catch(EOFException e) {}
-      fis.close();
-
-      fos = new FileOutputStream(config, false);
-      for (Byte writeByte : bytes) {
-        fos.write(writeByte);
-      }
-      fos.close();
-
-    } catch(IOException e) {
+      InputStream input = new ByteArrayInputStream(jsonOutput.getBytes());
+      Files.copy(input, Paths.get(configPath), StandardCopyOption.REPLACE_EXISTING);
+    } catch (IOException e) {
+      LOGGER.fatal("Cannot write config file!");
       e.printStackTrace();
     }
+
+    // long[] offsets = findVerifiedUsersByteOffsets();
+    // if(offsets == null) {
+    //   return;
+    // }
+
+    // String userList = buildVerifiedUsersString();
+    // spliceToFile(userList, offsets[0], offsets[1]);
   }
+
+  // TODO: use a better file type (like .toml) to create a nice, detailed config with comments
+  // For now just use a simple json file
+
+  // private static long[] findVerifiedUsersByteOffsets() { // Find the start and ending bytes of the verified user's object in the config file
+  //   File config = new File(configPath);
+  //   if (!config.exists() || config.isDirectory()) {
+  //     LOGGER.error("Could not sync config file to verified Users!");
+  //     return null;
+  //   }
+
+  //   long startingByte = -1, endingByte = -1;
+
+  //   try(JsonReader reader = new JsonReader(new FileReader(config))){
+  //     // To get the byte offsets from the Json object in the file
+  //     // we need access to the 'pos' variable that JsonReader uses to keep track of where it is on the InputStream
+  //     Field privatePosField = JsonReader.class.getDeclaredField("pos");
+  //     privatePosField.setAccessible(true);
+
+  //     reader.setLenient(true);
+  //     reader.beginObject();
+  //     while(reader.hasNext()) {
+  //       if(!reader.nextName().equals("verified_users")) {
+  //         reader.skipValue();
+  //         continue;
+  //       }
+
+  //       // Verified Users Object
+  //       reader.beginObject(); // Right after opening '{'
+  //       startingByte = privatePosField.getInt(reader) - 1;
+  //       while(reader.hasNext()) {
+  //         reader.skipValue();
+  //       }
+  //       reader.endObject();
+  //       endingByte = privatePosField.getInt(reader);
+  //     }
+  //   } catch(IOException e) {
+  //     LOGGER.error("Error reading json from file");
+  //     e.printStackTrace();
+  //     return null;
+  //   } catch(NoSuchFieldException | IllegalAccessException e) {
+  //     LOGGER.error("Error accessing JsonReader 'pos' field");
+  //     e.printStackTrace();
+  //     return null;
+  //   }
+
+  //   long[] res = {startingByte, endingByte};
+  //   return res;
+  // }
+
+  // private static String buildVerifiedUsersString() {
+  //   // Rough estimate of how big the final string will be
+  //   int builderSize = 66 * instance.verified_users.size() + 7;
+  //   StringBuilder sb = new StringBuilder(builderSize);
+
+  //   boolean isFirst = true;
+  //   sb.append("{\n");
+  //   for(Map.Entry<String, String> verifiedUser : instance.verified_users.entrySet()) {
+  //     if(isFirst) {
+  //       isFirst = false;
+  //     } else {
+  //       sb.append(",\n");
+  //     }
+
+  //     sb.append("    \"" + verifiedUser.getKey() + "\": \"" + verifiedUser.getValue() + "\"");
+  //   }
+  //   sb.append("\n  }");
+
+  //   return sb.toString();
+  // }
+
+  // private static void spliceToFile(String data, long byteStartOffset, long byteEndOffset) { // Replace Verified user's object string in the config file without changing the rest of it
+  //   File config = new File(configPath);
+  //   if (!config.exists() || config.isDirectory()) {
+  //     LOGGER.error("Could not open config file for rewriting!");
+  //     return;
+  //   }
+
+  //   DataInputStream fis;
+  //   FileOutputStream fos;
+  //   try {
+  //     fis = new DataInputStream(new BufferedInputStream(new FileInputStream(config)));
+  //     List<Byte> bytes = new ArrayList<Byte>(fis.available());
+
+  //     for(long i = 0; i < byteStartOffset; i++) {
+  //       bytes.add(fis.readByte());
+  //     }
+
+  //     for(Byte stringByte : data.getBytes()) {
+  //       bytes.add(stringByte);
+  //     }
+
+  //     fis.skip(byteEndOffset - byteStartOffset);
+
+  //     try {
+  //       while(true) {
+  //         bytes.add(fis.readByte());
+  //       }
+  //     } catch(EOFException e) {}
+  //     fis.close();
+
+  //     fos = new FileOutputStream(config, false);
+  //     for (Byte writeByte : bytes) {
+  //       fos.write(writeByte);
+  //     }
+  //     fos.close();
+
+  //   } catch(IOException e) {
+  //     e.printStackTrace();
+  //   }
+  // }
 
   // Object Fields
   private String discord_token;

@@ -1,0 +1,6 @@
+{
+  "discord_token": "BOT_TOKEN_HERE",
+  "discord_server_id": "SERVER_ID_HERE",
+  "discord_voice_channel_id": "VOICE_CHANNEL_ID_HERE",
+  "verified_users": {}
+}

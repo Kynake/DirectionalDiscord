@@ -14,10 +14,6 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
 
-// Apache
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 // Java
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +31,6 @@ public class Verify {
     UnknownUser;
   }
 
-  private static final Logger LOGGER = LogManager.getLogger();
   private static Map<String, List<String>> userVerifications = new HashMap<String, List<String>>();
 
   private static MinecraftServer serverInstance = null;

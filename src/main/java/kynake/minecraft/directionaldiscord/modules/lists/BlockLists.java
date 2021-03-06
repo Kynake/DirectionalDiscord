@@ -13,6 +13,11 @@ import net.minecraftforge.registries.ObjectHolder;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+
+// Apache
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Helper class that lists all block created by this mod and possibly
  * blocks from other mods that are of interest to this mod
@@ -21,6 +26,7 @@ import java.util.ArrayList;
  * registered in Forge's BlockRegistry
  */
 public class BlockLists {
+  private static final Logger LOGGER = LogManager.getLogger();
 
   // Block References
   @ObjectHolder(DirectionalDiscord.ModID + ":speaker")  public static SpeakerBlock SPEAKER;
@@ -57,7 +63,7 @@ public class BlockLists {
         BaseModBlock blockInstance = (BaseModBlock) field.getType().getDeclaredConstructor().newInstance();
         blocksListed.add(blockInstance);
       } catch(InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-        DirectionalDiscord.LOGGER.warn(String.format("WARNING: Block field %s could not be reflectively accessed.", field.getName()), e);
+        LOGGER.warn(String.format("WARNING: Block field %s could not be reflectively accessed.", field.getName()), e);
       }
     }
 

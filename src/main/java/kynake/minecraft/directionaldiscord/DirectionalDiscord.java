@@ -19,7 +19,7 @@ import java.io.IOException;
 public class DirectionalDiscord {
   // Constants
   public final static String ModID = "directionaldiscord";
-  public static final Logger LOGGER = LogManager.getLogger();
+  private static final Logger LOGGER = LogManager.getLogger();
 
   public static ListeningBot discordBot;
 

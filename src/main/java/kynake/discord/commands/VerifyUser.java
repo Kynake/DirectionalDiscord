@@ -16,7 +16,6 @@ public class VerifyUser implements Command {
   private static final Logger LOGGER = LogManager.getLogger();
 
   private static final String commandString = "verify";
-
   public String getCommandString() {
     return commandString;
   }
@@ -29,7 +28,7 @@ public class VerifyUser implements Command {
 
   public void onGuildMessage(GuildMessageReceivedEvent event, String[] args) {
    sendMessage(event,
-      "**This command should be sent as a Direct Message.**\nTo verify your Discord user against a Minecraft user, send a DM to this bot in the format:\n`"
+      "**This command should be sent as a Direct Message.**\nTo verify your Discord user with a Minecraft user, send a DM to this bot in the format:\n`"
       + commandTemplate() + "`, and follow the instructions given."
     );
   }

@@ -107,7 +107,7 @@ public class Verify {
       return verifiedUUID.equalsIgnoreCase(minecraftUUID)? VerificationStatus.AlreadyVerified : VerificationStatus.DiscordUserVerified;
     }
 
-    for (Map.Entry<String, String> entry : Config.getVerifiedUsers().entrySet()) {
+    for(Map.Entry<String, String> entry : Config.getVerifiedUsers().entrySet()) {
       if(entry.getValue().equalsIgnoreCase(minecraftUUID)) {
         // Already verified this Minecraft user to a different Discord user
         return VerificationStatus.MinecraftUserVerified;

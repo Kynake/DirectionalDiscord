@@ -29,7 +29,7 @@ public class CommandVerify implements Command<CommandSource> {
   }
 
   @Override
-  public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
+  public int run(CommandContext<CommandSource> context) {
     ServerPlayerEntity player;
     try {
       player = context.getSource().asPlayer();
@@ -94,5 +94,4 @@ public class CommandVerify implements Command<CommandSource> {
      src.sendFeedback(text, false);
     }
   }
-
 }

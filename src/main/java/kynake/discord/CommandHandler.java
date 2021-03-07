@@ -34,6 +34,7 @@ public class CommandHandler extends ListenerAdapter {
 
     // Register Commands
     createCommand(VerifyUser.class);
+    createCommand(UnverifyUser.class);
 
     LOGGER.info("Created Commands: " + commands.keySet().stream().map(command -> prefix + command).collect(Collectors.joining(", ")));
 

@@ -42,6 +42,10 @@ public class Config {
     return isConfigured()? instance.discord_voice_channel_id : null;
   }
 
+  /**
+   *
+   * @return A Map<String, String> of Discord User ID -> Minecraft UUID
+   */
   public static Map<String, String> getVerifiedUsers() {
     return isConfigured()? instance.verified_users : null;
   }
@@ -156,7 +160,7 @@ public class Config {
 
   //   long startingByte = -1, endingByte = -1;
 
-  //   try(JsonReader reader = new JsonReader(new FileReader(config))){
+  //   try(JsonReader reader = new JsonReader(new FileReader(config))) {
   //     // To get the byte offsets from the Json object in the file
   //     // we need access to the 'pos' variable that JsonReader uses to keep track of where it is on the InputStream
   //     Field privatePosField = JsonReader.class.getDeclaredField("pos");
@@ -259,6 +263,8 @@ public class Config {
   private String discord_token;
   private String discord_server_id;
   private String discord_voice_channel_id;
+
+  // Map of Discord User ID -> Minecraft UUID
   private Map<String, String> verified_users;
 
   private Config() { }

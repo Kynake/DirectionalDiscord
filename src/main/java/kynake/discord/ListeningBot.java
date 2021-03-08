@@ -27,8 +27,9 @@ public class ListeningBot extends ListenerAdapter {
   public static JDA jda = null;
 
   private BiConsumer<byte[], String> audioHandler;
-  private AudioCapture capturer;
+  private AudioCapture audioCapturer;
   private CommandHandler commandHandler;
+  private VoiceChannelHandler voiceChannelHandler;
 
   public static Guild getGuild() {
     return jda == null?
@@ -42,13 +43,26 @@ public class ListeningBot extends ListenerAdapter {
       jda.getVoiceChannelById(Config.getVoiceChannelID());
   }
 
+  public static Long getSelfID() {
+    return jda == null?
+      null :
+      jda.getSelfUser().getIdLong();
+  }
+
   public ListeningBot(BiConsumer<byte[], String> handler) throws LoginException {
     try {
+      voiceChannelHandler = new VoiceChannelHandler();
+      commandHandler = new CommandHandler();
+
       jda = JDABuilder.create(Config.getToken(),
         GatewayIntent.GUILD_MESSAGES,
         GatewayIntent.GUILD_VOICE_STATES,
         GatewayIntent.DIRECT_MESSAGES
-      ).addEventListeners(this).build();
+      ).addEventListeners(
+        this,
+        voiceChannelHandler,
+        commandHandler
+      ).build();
 
       // disableCache(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS)
 
@@ -75,8 +89,9 @@ public class ListeningBot extends ListenerAdapter {
     }
 
     try {
-      capturer = new AudioCapture(audioHandler);
-      commandHandler = new CommandHandler();
+      // Open audio connection
+      audioCapturer = new AudioCapture(audioHandler);
+
     } catch(Exception e) {
       if(jda != null) {
         jda.shutdownNow();

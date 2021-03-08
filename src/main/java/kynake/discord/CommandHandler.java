@@ -37,9 +37,6 @@ public class CommandHandler extends ListenerAdapter {
     createCommand(UnverifyUser.class);
 
     LOGGER.info("Created Commands: " + commands.keySet().stream().map(command -> prefix + command).collect(Collectors.joining(", ")));
-
-    // Register self as event handler
-    ListeningBot.jda.addEventListener(this);
   }
 
   private void createCommand(Class<? extends Command> commandClass) {

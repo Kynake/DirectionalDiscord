@@ -69,7 +69,7 @@ public class VerifyUser implements Command {
 
       case StillUnverified:
         sendMessage(event,                                                                                // TODO: this command doesn't exist yet
-          "**Verification request sent.**\nTo complete verification, as " + user + " in the Minecraft server, type `/directionaldiscord verify " + event.getAuthor().getId() + "`"
+          "**Verification request sent.**\nTo complete verification, as " + user + " in the Minecraft server, type `/directionaldiscord verify " + event.getAuthor().getAsTag() + "`"
         );
         break;
 

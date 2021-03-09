@@ -1,7 +1,7 @@
 package kynake.minecraft.directionaldiscord.modules.verification;
 
 // Internal
-import kynake.discord.ListeningBot;
+import kynake.minecraft.directionaldiscord.DirectionalDiscord;
 
 // Minecraft
 import com.mojang.brigadier.Command;
@@ -18,14 +18,16 @@ import net.minecraft.util.text.StringTextComponent;
 
 public class CommandVerify implements Command<CommandSource> {
   public static final String commandString = "verify";
-  public static final String argName = "Discord_User_ID";
+  public static final String argName = "DiscordName#1234";
   private static final CommandVerify CMD = new CommandVerify();
 
   public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
     return Commands.literal(commandString)
       .requires(cs -> cs.hasPermissionLevel(0))
-      .then(Commands.argument(argName, StringArgumentType.string())
-      .executes(CMD));
+      .then(
+        Commands.argument(argName, StringArgumentType.greedyString())
+        .executes(CMD)
+      );
   }
 
   @Override
@@ -38,48 +40,30 @@ public class CommandVerify implements Command<CommandSource> {
       return 0;
     }
 
-    String discordID = context.getArgument(argName, String.class);
+    String discordUserTag = context.getArgument(argName, String.class);
 
-    // Fetching Discord user info might block, so we run that in a separate thread
-    // So that we don't block the MAIN server thread
-    Thread th = new Thread(() -> {
-      Verify.VerificationStatus userStatus = Verify.verifyUser(player, discordID);
-      String discordUserTag = "Unknown";
-      if(userStatus != null) {
-        try {
-          discordUserTag = ListeningBot.jda.retrieveUserById(discordID).complete().getAsTag();
-        } catch(IllegalArgumentException e) {
-          e.printStackTrace();
-        }
+    switch(Verify.verifyUser(player, discordUserTag)) {
+      case UnknownUser:
+        sendMessage(context, "Invalid Discord User Tag: " + discordUserTag, true);
+        break;
 
-        switch(userStatus) {
-          case UnknownUser:
-            sendMessage(context, "Invalid Discord User ID", true);
-            break;
+      case AlreadyVerified:
+      case MinecraftUserVerified:
+        sendMessage(context, "You're already verified! You can unverify yourself by running the command '/" + DirectionalDiscord.ModID + " " + CommandUnverify.commandString + "'", false);
+        break;
 
-          case AlreadyVerified:
-            sendMessage(context, "You're all set! You're already verified as " + discordUserTag, false);
-            break;
+      case DiscordUserVerified:
+        sendMessage(context, discordUserTag + " is already verified to a different Minecraft user", true);
+        break;
 
-          case DiscordUserVerified:
-            sendMessage(context, discordUserTag + " is already verified to a different Minecraft user", true);
-            break;
+      case StillUnverified:
+        sendMessage(context, "No verification attempt for " + discordUserTag + " exists. To create one, as " + discordUserTag + ", send a DM to the bot on Discord with the message '/verify <Your_Minecraft_Username>'", true);
+        break;
 
-          case MinecraftUserVerified:
-            sendMessage(context, "You're already verified to a different Discord user. You can unverify yourself by running the command /directionaldiscord unverify", false);
-            break;
-
-          case StillUnverified:
-            sendMessage(context, "No verification attempt for " + discordUserTag + " exists. To create one, as " + discordUserTag + ", send a DM to the bot on Discord with the message '/verify <Your_Minecraft_Username>'", true);
-            break;
-
-          case VerificationComplete:
-            sendMessage(context, "Verification successful! You're now verified as " + discordUserTag, false);
-            break;
-        }
-      }
-    });
-    th.start();
+      case VerificationComplete:
+        sendMessage(context, "Verification successful! You're now verified as " + discordUserTag, false);
+        break;
+    }
 
     return 0;
   }

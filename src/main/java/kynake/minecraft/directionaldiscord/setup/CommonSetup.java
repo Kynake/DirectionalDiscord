@@ -4,6 +4,7 @@ package kynake.minecraft.directionaldiscord.setup;
 import kynake.discord.ListeningBot;
 import kynake.minecraft.directionaldiscord.DirectionalDiscord;
 import kynake.minecraft.directionaldiscord.config.Config;
+import kynake.minecraft.directionaldiscord.modules.audio.positional.PositionalAudio;
 import kynake.minecraft.directionaldiscord.modules.broadcast.AudioBroadcast;
 import kynake.minecraft.directionaldiscord.modules.lists.BlockLists;
 import kynake.minecraft.directionaldiscord.network.Networking;
@@ -53,9 +54,9 @@ public class CommonSetup {
     CommandSetup.registerCommands(event.getServer().getCommandManager().getDispatcher());
 
     // Start Discord Bot
-    AudioBroadcast broadcaster = new AudioBroadcast();
+    PositionalAudio player = new PositionalAudio();
     try {
-      DirectionalDiscord.discordBot = new ListeningBot(broadcaster::sendAudioToOtherPlayers);
+      DirectionalDiscord.discordBot = new ListeningBot(player::sendAudioToNearbyPlayers);
     } catch(LoginException e) {
       DirectionalDiscord.discordBot = null;
       Config.Unconfigure();

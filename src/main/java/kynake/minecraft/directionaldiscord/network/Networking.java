@@ -2,6 +2,7 @@ package kynake.minecraft.directionaldiscord.network;
 
 // Iternal
 import kynake.minecraft.directionaldiscord.DirectionalDiscord;
+import kynake.minecraft.directionaldiscord.modules.audio.positional.network.PacketSendPositionalAudio;
 import kynake.minecraft.directionaldiscord.modules.broadcast.network.PacketSendAudio;
 
 // Forge
@@ -35,6 +36,12 @@ public class Networking {
             .encoder(PacketSendAudio::toBytes)
             .decoder(PacketSendAudio::new)
             .consumer(PacketSendAudio::handle)
+            .add();
+
+    INSTANCE.messageBuilder(PacketSendPositionalAudio.class, nextID())
+            .encoder(PacketSendPositionalAudio::toBytes)
+            .decoder(PacketSendPositionalAudio::new)
+            .consumer(PacketSendPositionalAudio::handle)
             .add();
   }
 

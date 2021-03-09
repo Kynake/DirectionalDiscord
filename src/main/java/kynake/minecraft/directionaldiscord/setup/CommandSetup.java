@@ -5,8 +5,6 @@ import kynake.minecraft.directionaldiscord.DirectionalDiscord;
 import kynake.minecraft.directionaldiscord.modules.verification.CommandUnverify;
 import kynake.minecraft.directionaldiscord.modules.verification.CommandVerify;
 
-import java.util.ArrayList;
-
 // Minecraft
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;

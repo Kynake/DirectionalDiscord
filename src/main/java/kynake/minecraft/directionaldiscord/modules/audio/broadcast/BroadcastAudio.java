@@ -1,8 +1,8 @@
-package kynake.minecraft.directionaldiscord.modules.broadcast;
+package kynake.minecraft.directionaldiscord.modules.audio.broadcast;
 
 // Internal
 import kynake.minecraft.directionaldiscord.config.Config;
-import kynake.minecraft.directionaldiscord.modules.broadcast.network.PacketSendAudio;
+import kynake.minecraft.directionaldiscord.modules.audio.broadcast.network.PacketSendBroadcastAudio;
 import kynake.minecraft.directionaldiscord.network.Networking;
 
 // Forge
@@ -12,10 +12,10 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraft.server.MinecraftServer;
 
 
-public class AudioBroadcast {
+public class BroadcastAudio {
   private MinecraftServer serverInstance;
 
-  public AudioBroadcast() {
+  public BroadcastAudio() {
     serverInstance = ServerLifecycleHooks.getCurrentServer();
     if(serverInstance == null) {
       throw new IllegalStateException("Not on Server Side");
@@ -29,7 +29,7 @@ public class AudioBroadcast {
         return;
       }
 
-      Networking.sendToClient(new PacketSendAudio(audioSample), player);
+      Networking.sendToClient(new PacketSendBroadcastAudio(audioSample), player);
     });
   }
 }

@@ -1,4 +1,4 @@
-package kynake.minecraft.directionaldiscord.modules.broadcast.network;
+package kynake.minecraft.directionaldiscord.modules.audio.broadcast.network;
 
 // Internal
 import kynake.minecraft.directionaldiscord.setup.ClientSetup;
@@ -12,14 +12,14 @@ import net.minecraft.network.PacketBuffer;
 // Java
 import java.util.function.Supplier;
 
-public class PacketSendAudio {
+public class PacketSendBroadcastAudio {
   private final byte[] audioSample;
 
-  public PacketSendAudio(PacketBuffer buffer) {
+  public PacketSendBroadcastAudio(PacketBuffer buffer) {
     audioSample = buffer.readByteArray();
   }
 
-  public PacketSendAudio(byte[] audioSample) {
+  public PacketSendBroadcastAudio(byte[] audioSample) {
     this.audioSample = audioSample;
   }
 

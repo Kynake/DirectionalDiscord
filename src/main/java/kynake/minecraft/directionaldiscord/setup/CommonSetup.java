@@ -4,8 +4,8 @@ package kynake.minecraft.directionaldiscord.setup;
 import kynake.discord.ListeningBot;
 import kynake.minecraft.directionaldiscord.DirectionalDiscord;
 import kynake.minecraft.directionaldiscord.config.Config;
+import kynake.minecraft.directionaldiscord.modules.audio.broadcast.BroadcastAudio;
 import kynake.minecraft.directionaldiscord.modules.audio.positional.PositionalAudio;
-import kynake.minecraft.directionaldiscord.modules.broadcast.AudioBroadcast;
 import kynake.minecraft.directionaldiscord.modules.lists.BlockLists;
 import kynake.minecraft.directionaldiscord.network.Networking;
 

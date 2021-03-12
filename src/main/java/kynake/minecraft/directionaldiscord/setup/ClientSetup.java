@@ -1,5 +1,6 @@
 package kynake.minecraft.directionaldiscord.setup;
 
+import kynake.audio.AudioPlayer;
 // Internal
 import kynake.audio.PositionalAudioPlayer;
 import kynake.audio.SimpleAudioPlayer;
@@ -25,7 +26,7 @@ public class ClientSetup {
     FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::onModClientSetup);
   }
 
-  public static PositionalAudioPlayer clientPlayer = null;
+  public static AudioPlayer clientPlayer = null;
 
   public static void onModClientSetup(FMLClientSetupEvent event) {
     // Runs after onCommonSetup if on Client
@@ -37,7 +38,7 @@ public class ClientSetup {
     if(clientPlayer == null) {
       // Start Audio Player
       LOGGER.info("Starting new AudioPlayer");
-      clientPlayer = new PositionalAudioPlayer();
+      clientPlayer = new SimpleAudioPlayer();
     }
   }
 

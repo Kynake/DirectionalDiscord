@@ -31,7 +31,7 @@ public class PacketSendBroadcastAudio {
     context.get().enqueueWork(() -> {
       // Make sure we are on the client before playing Audio
       if(context.get().getDirection().getReceptionSide().isClient()) {
-        ClientSetup.clientPlayer.playPCMSample(audioSample);
+        ClientSetup.clientPlayer.playPCMSample(audioSample, null, null, null);
       }
     });
 

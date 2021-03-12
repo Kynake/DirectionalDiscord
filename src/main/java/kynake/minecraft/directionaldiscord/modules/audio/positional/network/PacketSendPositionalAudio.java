@@ -7,6 +7,7 @@ import kynake.minecraft.directionaldiscord.setup.ClientSetup;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 // Minecraft
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.vector.Vector3d;
 
@@ -46,7 +47,7 @@ public class PacketSendPositionalAudio {
     context.get().enqueueWork(() -> {
       // Make sure we are on the client before playing Audio
       if(context.get().getDirection().getReceptionSide().isClient()) {
-        ClientSetup.clientPlayer.playPCMSample(audioSample, speaker, speakerPosition);
+        ClientSetup.clientPlayer.playPCMSample(audioSample, speaker, speakerPosition, Minecraft.getInstance().player.getPositionVec());
       }
     });
 

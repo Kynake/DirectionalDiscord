@@ -3,8 +3,16 @@ package kynake.audio;
 // JDA
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 
+// Miencraft
+import net.minecraft.util.math.vector.Vector3d;
+
+// Apache
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 // Java
 import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.sound.sampled.AudioSystem;
@@ -12,12 +20,8 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-// Apache
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 // Simply plays the audio wihtout modifications
-public class SimpleAudioPlayer implements Runnable {
+public class SimpleAudioPlayer implements Runnable, AudioPlayer {
   private static final Logger LOGGER = LogManager.getLogger();
 
   // TODO: find a better way to get this value without hardcoding it
@@ -38,7 +42,7 @@ public class SimpleAudioPlayer implements Runnable {
     t.start();
   }
 
-  public void playPCMSample(byte[] pcmSample) {
+  public void playPCMSample(byte[] pcmSample, UUID sourceID, Vector3d sourceLocation, Vector3d listenerLocation) {
     if(audioLine == null || !audioLine.isOpen()) {
       LOGGER.debug("Cannot play audio, audioLine is " + (audioLine ==  null? "null" : "closed"));
       return;

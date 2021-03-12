@@ -11,19 +11,16 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.vector.Vector3d;
 
 // Java
+import java.util.UUID;
 import java.util.function.Supplier;
 
-// Apache
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 public class PacketSendPositionalAudio {
-  private static final Logger LOGGER = LogManager.getLogger();
-
+  private final UUID speaker;
   private final Vector3d speakerPosition;
   private final byte[] audioSample;
 
   public PacketSendPositionalAudio(PacketBuffer buffer) {
+    speaker = buffer.readUniqueId();
     double x = buffer.readDouble();
     double y = buffer.readDouble();
     double z = buffer.readDouble();
@@ -31,12 +28,14 @@ public class PacketSendPositionalAudio {
     speakerPosition = new Vector3d(x, y, z);
   }
 
-  public PacketSendPositionalAudio(byte[] audioSample, Vector3d speakerPosition) {
+  public PacketSendPositionalAudio(byte[] audioSample, UUID speaker, Vector3d speakerPosition) {
+    this.speaker = speaker;
     this.speakerPosition = speakerPosition;
     this.audioSample = audioSample;
   }
 
   public void toBytes(PacketBuffer buffer) {
+    buffer.writeUniqueId(speaker);
     buffer.writeDouble(speakerPosition.x);
     buffer.writeDouble(speakerPosition.y);
     buffer.writeDouble(speakerPosition.z);
@@ -47,9 +46,7 @@ public class PacketSendPositionalAudio {
     context.get().enqueueWork(() -> {
       // Make sure we are on the client before playing Audio
       if(context.get().getDirection().getReceptionSide().isClient()) {
-        LOGGER.debug("Received audio at: [" + speakerPosition.x + ", " + speakerPosition.y + ", " + speakerPosition.z + "]");
-        // ClientSetup.clientPlayer.playPCMSample(audioSample, speakerPosition);
-        ClientSetup.clientPlayer.playPCMSample(audioSample);
+        ClientSetup.clientPlayer.playPCMSample(audioSample, speaker, speakerPosition);
       }
     });
 

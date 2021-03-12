@@ -42,7 +42,7 @@ public class PositionalAudio {
         return;
       }
 
-      Networking.sendToClient(new PacketSendPositionalAudio(audioSample, speaker.getPositionVec()), player);
+      Networking.sendToClient(new PacketSendPositionalAudio(audioSample, speaker.getUniqueID(), speaker.getPositionVec()), player);
     });
   }
 

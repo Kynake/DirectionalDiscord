@@ -20,7 +20,7 @@ public interface AudioPlayer {
    * @param sourceLocation
    * @param listenerLocation
    */
-  public void playPCMSample(byte[] pcmSample, UUID sourceID, Vector3d sourceLocation, Vector3d listenerLocation);
+  public void playPCMSample(byte[] pcmSample, UUID sourceID, Vector3d sourceLocation);
 
   /**
    * Closes and cleans up this AudioPlayer

@@ -14,7 +14,9 @@ import net.minecraft.util.math.vector.Vector3d;
 // Java
 import java.util.UUID;
 import java.util.function.Supplier;
-
+/**
+ * Network packet containg audio and positional information about an audio source
+ */
 public class PacketSendPositionalAudio {
   private final UUID speaker;
   private final Vector3d speakerPosition;
@@ -47,7 +49,7 @@ public class PacketSendPositionalAudio {
     context.get().enqueueWork(() -> {
       // Make sure we are on the client before playing Audio
       if(context.get().getDirection().getReceptionSide().isClient()) {
-        ClientSetup.clientPlayer.playPCMSample(audioSample, speaker, speakerPosition, Minecraft.getInstance().player.getPositionVec());
+        ClientSetup.clientPlayer.playPCMSample(audioSample, speaker, speakerPosition);
       }
     });
 

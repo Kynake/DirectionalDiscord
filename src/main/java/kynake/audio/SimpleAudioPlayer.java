@@ -40,7 +40,7 @@ public class SimpleAudioPlayer implements AudioPlayer, Runnable {
   }
 
   @Override
-  public void playPCMSample(byte[] pcmSample, UUID sourceID, Vector3d sourceLocation, Vector3d listenerLocation) {
+  public void playPCMSample(byte[] pcmSample, UUID sourceID, Vector3d sourceLocation) {
     if(audioLine == null || !audioLine.isOpen()) {
       LOGGER.debug("Cannot play audio, audioLine is " + (audioLine ==  null? "null" : "closed"));
       return;

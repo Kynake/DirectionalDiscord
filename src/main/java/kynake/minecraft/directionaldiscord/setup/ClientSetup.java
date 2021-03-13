@@ -3,6 +3,7 @@ package kynake.minecraft.directionaldiscord.setup;
 import kynake.audio.AudioPlayer;
 // Internal
 import kynake.audio.PositionalAudioPlayer;
+import kynake.audio.RadiusAudioPlayer;
 import kynake.audio.SimpleAudioPlayer;
 import kynake.minecraft.directionaldiscord.DirectionalDiscord;
 
@@ -38,7 +39,7 @@ public class ClientSetup {
     if(clientPlayer == null) {
       // Start Audio Player
       LOGGER.info("Starting new AudioPlayer");
-      clientPlayer = new SimpleAudioPlayer();
+      clientPlayer = new RadiusAudioPlayer();
     }
   }
 

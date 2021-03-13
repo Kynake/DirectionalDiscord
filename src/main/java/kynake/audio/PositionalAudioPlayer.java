@@ -26,7 +26,8 @@ public class PositionalAudioPlayer implements AudioPlayer {
   }
 
   @Override
-  public void playPCMSample(byte[] pcmSample, UUID sourceID, Vector3d sourceLocation, Vector3d listenerLocation) {
+  public void playPCMSample(byte[] pcmSample, UUID sourceID, Vector3d sourceLocation) {
+    Vector3d listenerLocation = getPlayerPosition();
     LOGGER.debug("Playing pcm at: [{},\t{},\t{}]",   sourceLocation.x,   sourceLocation.y,   sourceLocation.z);
     LOGGER.debug("Listening at:   [{},\t{},\t{}]", listenerLocation.x, listenerLocation.y, listenerLocation.z);
   }

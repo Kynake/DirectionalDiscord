@@ -3,12 +3,8 @@ package kynake.audio;
 // JDA
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 
-// Miencraft
+// Minecraft
 import net.minecraft.util.math.vector.Vector3d;
-
-// Apache
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 // Java
 import java.util.Queue;
@@ -20,9 +16,10 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-// Simply plays the audio wihtout modifications
-public class SimpleAudioPlayer implements Runnable, AudioPlayer {
-  private static final Logger LOGGER = LogManager.getLogger();
+/**
+ * Audio player that simply plays the audio without modifications
+ */
+public class SimpleAudioPlayer implements AudioPlayer, Runnable {
 
   // TODO: find a better way to get this value without hardcoding it
   // This is the constant size of the byte[]'s sent over by the Discord Bot
@@ -42,6 +39,7 @@ public class SimpleAudioPlayer implements Runnable, AudioPlayer {
     t.start();
   }
 
+  @Override
   public void playPCMSample(byte[] pcmSample, UUID sourceID, Vector3d sourceLocation, Vector3d listenerLocation) {
     if(audioLine == null || !audioLine.isOpen()) {
       LOGGER.debug("Cannot play audio, audioLine is " + (audioLine ==  null? "null" : "closed"));
@@ -52,6 +50,7 @@ public class SimpleAudioPlayer implements Runnable, AudioPlayer {
     pcmBuffer.add(pcmSample);
   }
 
+  @Override
   public void run() throws IllegalStateException {
     try {
       audioLine.open();
@@ -80,7 +79,7 @@ public class SimpleAudioPlayer implements Runnable, AudioPlayer {
     pcmBuffer.clear();
   }
 
-
+  @Override
   public void close() {
     audioLine.stop();
     audioLine.flush();

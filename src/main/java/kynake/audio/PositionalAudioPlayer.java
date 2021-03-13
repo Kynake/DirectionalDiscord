@@ -13,27 +13,25 @@ import net.minecraft.client.Minecraft;
 // Minecraft
 import net.minecraft.util.math.vector.Vector3d;
 
-// Apache
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 // Java
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
+/**
+ * Audio player that plays audio relative to sources and listener position in 3D Space
+ */
 public class PositionalAudioPlayer implements AudioPlayer {
-  private static final Logger LOGGER = LogManager.getLogger();
-
   public PositionalAudioPlayer() {
 
   }
 
+  @Override
   public void playPCMSample(byte[] pcmSample, UUID sourceID, Vector3d sourceLocation, Vector3d listenerLocation) {
     LOGGER.debug("Playing pcm at: [{},\t{},\t{}]",   sourceLocation.x,   sourceLocation.y,   sourceLocation.z);
     LOGGER.debug("Listening at:   [{},\t{},\t{}]", listenerLocation.x, listenerLocation.y, listenerLocation.z);
   }
 
+  @Override
   public void close() {
 
   }

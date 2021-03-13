@@ -23,7 +23,7 @@ public interface AudioPlayer {
   public void playPCMSample(byte[] pcmSample, UUID sourceID, Vector3d sourceLocation, Vector3d listenerLocation);
 
   /**
-   * Closes and clans up this AudioPlayer
+   * Closes and cleans up this AudioPlayer
    */
   public void close();
 

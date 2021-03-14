@@ -137,7 +137,7 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
 
   private short[] scalePCMSample(byte[] sample, double scaleFactor) {
 
-    short[] shortSample = sampleAsShortArray(sample);
+    short[] shortSample = Utils.byteToShortArray(sample, AudioReceiveHandler.OUTPUT_FORMAT.isBigEndian());
     for(int i = 0; i < shortSample.length; i++) {
       shortSample[i] = (short) Math.round(shortSample[i] * scaleFactor);
     }
@@ -155,7 +155,7 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
       return null;
     }
 
-    return sampleFromShortArray(shortCombined);
+    return Utils.shortToByteArray(shortCombined, AudioReceiveHandler.OUTPUT_FORMAT.isBigEndian());
   }
 
   private short[] combineSamples(@Nonnull short[] base, @Nonnull short[] other) {
@@ -181,39 +181,6 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
   @SuppressWarnings({"resource"})
   private Vector3d getListenerLocation() {
     return  Minecraft.getInstance().player.getPositionVec();
-  }
-
-  @Nonnull
-  private short[] sampleAsShortArray(@Nonnull byte[] sample) {
-    short[] res = new short[sample.length / Short.BYTES];
-    if(AudioReceiveHandler.OUTPUT_FORMAT.isBigEndian()) {
-      for(int i = 0; i < res.length; i++) {
-        res[i] = (short) (sample[i * 2] << 8 | sample[i * 2 + 1] & 0xff);
-      }
-    } else {
-      for(int i = 0; i < res.length; i++) {
-        res[i] = (short) (sample[i * 2 + 1] << 8 | sample[i * 2] & 0xff);
-      }
-    }
-
-    return res;
-  }
-
-  @Nonnull byte[] sampleFromShortArray(@Nonnull short[] shortSample) {
-    byte[] res = new byte[shortSample.length * Short.BYTES];
-    if(AudioReceiveHandler.OUTPUT_FORMAT.isBigEndian()) {
-      for(int i = 0; i < shortSample.length; i++) {
-        res[i*2] = (byte) (shortSample[i] >> Byte.SIZE);
-        res[i*2 + 1] = (byte) shortSample[i];
-      }
-    } else {
-      for(int i = 0; i < shortSample.length; i++) {
-        res[i*2] = (byte) shortSample[i];
-        res[i*2 + 1] = (byte) (shortSample[i] >> Byte.SIZE);
-      }
-    }
-
-    return res;
   }
 
   private SourceDataLine createDataLine() {

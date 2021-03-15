@@ -32,6 +32,7 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
   // TODO: find a better way to get this value without hardcoding it
   // This is the constant size of the byte[]'s sent over by the Discord Bot
   private static final int bufferSize = 3840;
+  private static final byte[] emptySample = new byte[bufferSize];
 
   private SourceDataLine audioLine;
   private Map<UUID, ConcurrentLinkedQueue<Sound>> sourceBuffers = new HashMap<>();
@@ -67,18 +68,33 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
       throw new IllegalStateException("Cannot continue with without available dataline");
     }
 
+    int discardSamples = 0;
+
     audioLine.start();
     while(audioLine.isOpen()) { // Keep the Thread open while we process audio
       byte[] nextSample = generateCombinedSample();
       if(nextSample != null) {
-        // Add next buffered sample to audioLine
-        audioLine.write(nextSample, 0, nextSample.length);
+        if(discardSamples != 0) {
+          discardSamples--;
+
+          // Player audio samples were removed from buffer during generateCombinedSample(),
+          // so we discard them here, by playing silence instead of the combined sample
+          audioLine.write(emptySample, 0, emptySample.length);
+        } else {
+          // Add next buffered sample to audioLine
+          audioLine.write(nextSample, 0, nextSample.length);
+        }
       } else if(audioLine.available() < audioLine.getBufferSize()) {
         // If no new buffered sample has come in since last iteration, playout the remaining buffer on the audioLine
         audioLine.drain();
       } else {
         // If both buffers are empty, it's safe to discard whatever leftover data there might still be there
         audioLine.flush();
+
+        // When no audio is playing, at the start of the next sample,
+        // audio that was cut off from the previous sample might still play,
+        // so we ignore the samples that contain audio from before
+        discardSamples = 2;
       }
     }
 

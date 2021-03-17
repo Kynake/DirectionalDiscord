@@ -1,11 +1,12 @@
 package kynake.minecraft.directionaldiscord.modules.audio.broadcast.network;
 
+import kynake.audio.Utils;
 // Internal
 import kynake.minecraft.directionaldiscord.setup.ClientSetup;
 
 // Forge
 import net.minecraftforge.fml.network.NetworkEvent;
-
+import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 // Minecraft
 import net.minecraft.network.PacketBuffer;
 
@@ -31,7 +32,7 @@ public class PacketSendBroadcastAudio {
     context.get().enqueueWork(() -> {
       // Make sure we are on the client before playing Audio
       if(context.get().getDirection().getReceptionSide().isClient()) {
-        ClientSetup.clientPlayer.playPCMSample(audioSample, null, null);
+        ClientSetup.clientPlayer.playPCMSample(Utils.byteToShortArray(audioSample, AudioReceiveHandler.OUTPUT_FORMAT.isBigEndian()), null, null);
       }
     });
 

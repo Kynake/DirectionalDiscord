@@ -153,11 +153,14 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.16.5-36.0.22'
 
     // JDA
+    embed('net.java.dev.jna:jna:4.4.0')
     embed('net.dv8tion:JDA:4.2.0_227') {
         exclude group: 'okhttp3', module: 'okhttp'
     }
     embed 'com.squareup.okhttp3:okhttp:4.9.0'
     embed 'club.minnced:discord-webhooks:0.5.4'
+    embed 'club.minnced:opus-java-api:1.0.5'
+    embed 'club.minnced:opus-java-natives:1.0.5'
 
     // Real examples
     // compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env

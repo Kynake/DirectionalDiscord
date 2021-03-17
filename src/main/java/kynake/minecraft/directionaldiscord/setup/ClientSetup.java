@@ -1,7 +1,8 @@
 package kynake.minecraft.directionaldiscord.setup;
 
-import kynake.audio.AudioPlayer;
 // Internal
+import kynake.audio.OpusHandler;
+import kynake.audio.AudioPlayer;
 import kynake.audio.PositionalAudioPlayer;
 import kynake.audio.RadiusAudioPlayer;
 import kynake.audio.SimpleAudioPlayer;
@@ -28,6 +29,7 @@ public class ClientSetup {
   }
 
   public static AudioPlayer clientPlayer = null;
+  public static OpusHandler clientOpus = null;
 
   public static void onModClientSetup(FMLClientSetupEvent event) {
     // Runs after onCommonSetup if on Client
@@ -41,6 +43,12 @@ public class ClientSetup {
       LOGGER.info("Starting new AudioPlayer");
       clientPlayer = new RadiusAudioPlayer();
     }
+
+    if(clientOpus == null) {
+      // Start Opus Handler
+      LOGGER.info("Starting Client Opus");
+      clientOpus = OpusHandler.instance();
+    }
   }
 
   @SubscribeEvent
@@ -50,6 +58,13 @@ public class ClientSetup {
       LOGGER.info("Stopping AudioPlayer");
       clientPlayer.close();
       clientPlayer = null;
+    }
+
+    if(clientOpus != null) {
+      // Stop Opus Handler
+      LOGGER.info("Stopping Client Opus");
+      clientOpus.close();
+      clientOpus = null;
     }
   }
 }

@@ -26,7 +26,7 @@ public class PositionalAudio {
     }
   }
 
-  public void sendAudioToNearbyPlayers(byte[] audioSample, String discordUserID) {
+  public void sendAudioToNearbyPlayers(byte[] rawOpusData, String discordUserID) {
     ServerPlayerEntity speaker = getPlayerFromDiscordID(discordUserID);
     if(speaker == null) {
       return;
@@ -43,7 +43,7 @@ public class PositionalAudio {
         return;
       }
 
-      Networking.sendToClient(new PacketSendPositionalAudio(audioSample, speaker.getUniqueID(), speaker.getPositionVec()), player);
+      Networking.sendToClient(new PacketSendPositionalAudio(rawOpusData, speaker.getUniqueID(), speaker.getPositionVec()), player);
     });
   }
 

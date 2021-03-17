@@ -48,7 +48,7 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
   }
 
   @Override
-  public void playPCMSample(byte[] pcmSample, UUID sourceID, Vector3d sourceLocation) {
+  public void playPCMSample(short[] pcmSample, UUID sourceID, Vector3d sourceLocation) {
     if(audioLine == null || !audioLine.isOpen()) {
       LOGGER.debug("Cannot play audio, audioLine is " + (audioLine ==  null? "null" : "closed"));
       return;
@@ -69,10 +69,11 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
     }
 
     int discardSamples = 0;
+    boolean bigEndian = AudioReceiveHandler.OUTPUT_FORMAT.isBigEndian();
 
     audioLine.start();
     while(audioLine.isOpen()) { // Keep the Thread open while we process audio
-      byte[] nextSample = generateCombinedSample();
+      short[] nextSample = generateCombinedSample();
       if(nextSample != null) {
         if(discardSamples != 0) {
           discardSamples--;
@@ -82,7 +83,7 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
           audioLine.write(emptySample, 0, emptySample.length);
         } else {
           // Add next buffered sample to audioLine
-          audioLine.write(nextSample, 0, nextSample.length);
+          audioLine.write(Utils.shortToByteArray(nextSample, bigEndian), 0, nextSample.length);
         }
       } else if(audioLine.available() < audioLine.getBufferSize()) {
         // If no new buffered sample has come in since last iteration, playout the remaining buffer on the audioLine
@@ -113,9 +114,9 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
   }
 
   @Nullable
-  private byte[] generateCombinedSample() {
+  private short[] generateCombinedSample() {
     List<short[]> scaledByDistance = scaleSamplesVolume();
-    byte[] mixedSourcesSample = combineSourceSamples(scaledByDistance);
+    short[] mixedSourcesSample = combineSourceSamples(scaledByDistance);
     return mixedSourcesSample;
   }
 
@@ -151,19 +152,17 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
     return 1 - distSquared / rangeSquared;
   }
 
-  private short[] scalePCMSample(byte[] sample, double scaleFactor) {
-
-    short[] shortSample = Utils.byteToShortArray(sample, AudioReceiveHandler.OUTPUT_FORMAT.isBigEndian());
-    for(int i = 0; i < shortSample.length; i++) {
-      shortSample[i] = (short) Math.round(shortSample[i] * scaleFactor);
+  private short[] scalePCMSample(short[] sample, double scaleFactor) {
+    for(int i = 0; i < sample.length; i++) {
+      sample[i] = (short) Math.round(sample[i] * scaleFactor);
     }
 
-    return shortSample;
+    return sample;
   }
 
   // Audio Combining
   @Nullable
-  private byte[] combineSourceSamples(@Nonnull List<short[]> sourceSamples) {
+  private short[] combineSourceSamples(@Nonnull List<short[]> sourceSamples) {
     short[] shortCombined;
     try {
       shortCombined = sourceSamples.stream().reduce((combined, sample) -> combineSamples(combined, sample)).get();
@@ -171,7 +170,7 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
       return null;
     }
 
-    return Utils.shortToByteArray(shortCombined, AudioReceiveHandler.OUTPUT_FORMAT.isBigEndian());
+    return shortCombined;
   }
 
   private short[] combineSamples(@Nonnull short[] base, @Nonnull short[] other) {

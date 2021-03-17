@@ -20,21 +20,21 @@ import java.util.function.Supplier;
 public class PacketSendPositionalAudio {
   private final UUID speaker;
   private final Vector3d speakerPosition;
-  private final byte[] audioSample;
+  private final byte[] rawOpusSample;
 
   public PacketSendPositionalAudio(PacketBuffer buffer) {
     speaker = buffer.readUniqueId();
     double x = buffer.readDouble();
     double y = buffer.readDouble();
     double z = buffer.readDouble();
-    audioSample = buffer.readByteArray();
+    rawOpusSample = buffer.readByteArray();
     speakerPosition = new Vector3d(x, y, z);
   }
 
-  public PacketSendPositionalAudio(byte[] audioSample, UUID speaker, Vector3d speakerPosition) {
+  public PacketSendPositionalAudio(byte[] rawOpusSample, UUID speaker, Vector3d speakerPosition) {
     this.speaker = speaker;
     this.speakerPosition = speakerPosition;
-    this.audioSample = audioSample;
+    this.rawOpusSample = rawOpusSample;
   }
 
   public void toBytes(PacketBuffer buffer) {
@@ -42,14 +42,15 @@ public class PacketSendPositionalAudio {
     buffer.writeDouble(speakerPosition.x);
     buffer.writeDouble(speakerPosition.y);
     buffer.writeDouble(speakerPosition.z);
-    buffer.writeByteArray(audioSample);
+    buffer.writeByteArray(rawOpusSample);
   }
 
   public boolean handle(Supplier<NetworkEvent.Context> context) {
     context.get().enqueueWork(() -> {
       // Make sure we are on the client before playing Audio
       if(context.get().getDirection().getReceptionSide().isClient()) {
-        ClientSetup.clientPlayer.playPCMSample(audioSample, speaker, speakerPosition);
+        short[] pcmSample = ClientSetup.clientOpus.toPCMAudio(rawOpusSample);
+        ClientSetup.clientPlayer.playPCMSample(pcmSample, speaker, speakerPosition);
       }
     });
 

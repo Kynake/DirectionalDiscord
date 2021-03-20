@@ -2,7 +2,7 @@ package kynake.minecraft.directionaldiscord;
 
 // Internal
 import kynake.discord.ListeningBot;
-import kynake.minecraft.directionaldiscord.config.Config;
+import kynake.minecraft.directionaldiscord.config.PrivateConfig;
 
 // Forge
 import net.minecraftforge.fml.common.Mod;
@@ -25,11 +25,11 @@ public class DirectionalDiscord {
 
   public DirectionalDiscord() throws IOException {
     LOGGER.info("HELLO from Mod Build");
-    Config.acquireConfigs();
+    PrivateConfig.acquireConfigs();
 
-    LOGGER.info(Config.getServerID());
-    LOGGER.info(Config.getVoiceChannelID());
-    LOGGER.info(Config.getVerifiedUsers());
+    LOGGER.info(PrivateConfig.getServerID());
+    LOGGER.info(PrivateConfig.getVoiceChannelID());
+    LOGGER.info(PrivateConfig.getVerifiedUsers());
   }
 
 

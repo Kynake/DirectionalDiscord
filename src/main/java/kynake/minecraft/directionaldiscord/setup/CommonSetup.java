@@ -3,7 +3,7 @@ package kynake.minecraft.directionaldiscord.setup;
 // Internal
 import kynake.discord.ListeningBot;
 import kynake.minecraft.directionaldiscord.DirectionalDiscord;
-import kynake.minecraft.directionaldiscord.config.Config;
+import kynake.minecraft.directionaldiscord.config.PrivateConfig;
 import kynake.minecraft.directionaldiscord.modules.audio.broadcast.BroadcastAudio;
 import kynake.minecraft.directionaldiscord.modules.audio.positional.PositionalAudio;
 import kynake.minecraft.directionaldiscord.modules.lists.BlockLists;
@@ -59,7 +59,7 @@ public class CommonSetup {
       DirectionalDiscord.discordBot = new ListeningBot(player::sendAudioToNearbyPlayers);
     } catch(LoginException e) {
       DirectionalDiscord.discordBot = null;
-      Config.Unconfigure();
+      PrivateConfig.Unconfigure();
     }
   }
 

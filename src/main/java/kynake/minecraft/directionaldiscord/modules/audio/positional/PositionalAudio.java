@@ -1,7 +1,7 @@
 package kynake.minecraft.directionaldiscord.modules.audio.positional;
 
 // Internal
-import kynake.minecraft.directionaldiscord.config.Config;
+import kynake.minecraft.directionaldiscord.config.PrivateConfig;
 import kynake.minecraft.directionaldiscord.modules.audio.positional.network.PacketSendPositionalAudio;
 import kynake.minecraft.directionaldiscord.network.Networking;
 
@@ -48,7 +48,7 @@ public class PositionalAudio {
   }
 
   private ServerPlayerEntity getPlayerFromDiscordID(String discordUserID) {
-    String minecraftUUID = Config.getVerifiedUsers().get(discordUserID);
+    String minecraftUUID = PrivateConfig.getVerifiedUsers().get(discordUserID);
     if(minecraftUUID == null) {
       return null;
     }

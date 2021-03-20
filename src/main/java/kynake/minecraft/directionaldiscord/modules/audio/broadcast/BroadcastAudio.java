@@ -1,7 +1,7 @@
 package kynake.minecraft.directionaldiscord.modules.audio.broadcast;
 
 // Internal
-import kynake.minecraft.directionaldiscord.config.Config;
+import kynake.minecraft.directionaldiscord.config.PrivateConfig;
 import kynake.minecraft.directionaldiscord.modules.audio.broadcast.network.PacketSendBroadcastAudio;
 import kynake.minecraft.directionaldiscord.network.Networking;
 
@@ -23,7 +23,7 @@ public class BroadcastAudio {
   }
 
   public void sendAudioToOtherPlayers(byte[] audioSample, String discordUserID) {
-    String minecraftUUID = Config.getVerifiedUsers().get(discordUserID);
+    String minecraftUUID = PrivateConfig.getVerifiedUsers().get(discordUserID);
     serverInstance.getPlayerList().getPlayers().forEach(player -> {
       if(player.getUniqueID().toString().equalsIgnoreCase(minecraftUUID)) {
         return;

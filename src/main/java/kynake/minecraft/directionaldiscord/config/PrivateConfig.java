@@ -21,14 +21,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-public class Config {
+public class PrivateConfig {
   // Static Fields
   private static final Logger LOGGER = LogManager.getLogger();
 
   private static final String configPath = "directional-discord-private-config.json";
   private static final String templatePath = "/assets/directionaldiscord/dd-config-template.json";
 
-  private static Config instance = null;
+  private static PrivateConfig instance = null;
 
   public static String getToken() {
     return isConfigured()? instance.discord_token : null;
@@ -65,7 +65,7 @@ public class Config {
       Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
 
       try {
-        instance = gson.fromJson(new FileReader(config), Config.class);
+        instance = gson.fromJson(new FileReader(config), PrivateConfig.class);
       } catch (FileNotFoundException e) {
         LOGGER.fatal("Cannot read config file!");
         e.printStackTrace();
@@ -119,7 +119,7 @@ public class Config {
 
   private static void copyTemplate() {
     try {
-      InputStream input = Config.class.getResourceAsStream(templatePath);
+      InputStream input = PrivateConfig.class.getResourceAsStream(templatePath);
       Files.copy(input, Paths.get(configPath));
     } catch (IOException e) {
       LOGGER.error("Cannot create config file!");
@@ -267,5 +267,5 @@ public class Config {
   // Map of Discord User ID -> Minecraft UUID
   private Map<String, String> verified_users;
 
-  private Config() { }
+  private PrivateConfig() { }
 }

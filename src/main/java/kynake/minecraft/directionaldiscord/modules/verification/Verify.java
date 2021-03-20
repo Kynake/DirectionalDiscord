@@ -2,7 +2,7 @@ package kynake.minecraft.directionaldiscord.modules.verification;
 
 // Internal
 import kynake.discord.ListeningBot;
-import kynake.minecraft.directionaldiscord.config.Config;
+import kynake.minecraft.directionaldiscord.config.PrivateConfig;
 
 // JDA
 import net.dv8tion.jda.api.entities.User;
@@ -105,7 +105,7 @@ public class Verify {
     }
 
     // Verification started from Discord is complete
-    Config.addVerifiedUser(discordUser.getId(), minecraftUUID.toString());
+    PrivateConfig.addVerifiedUser(discordUser.getId(), minecraftUUID.toString());
 
     // Clear other verification attempts for this Minecraft user
     verificationsForUUID.clear();
@@ -115,7 +115,7 @@ public class Verify {
   }
 
   private static VerificationStatus checkConfigVerification(String discordID, UUID minecraftUUID) {
-    String verifiedUUID = Config.getVerifiedUsers().get(discordID);
+    String verifiedUUID = PrivateConfig.getVerifiedUsers().get(discordID);
     String minecraftUUIDString = minecraftUUID.toString();
     if(verifiedUUID != null) {
       // Already verified this minecraft user to this Discord user / The discord user is already verified for a different Minecraft user
@@ -124,7 +124,7 @@ public class Verify {
 
     // TODO separate this code from this method,
     // Since the Minecraft command most likely won't cache the discord user, and so the code above this will never return early
-    for(Map.Entry<String, String> entry : Config.getVerifiedUsers().entrySet()) {
+    for(Map.Entry<String, String> entry : PrivateConfig.getVerifiedUsers().entrySet()) {
       if(entry.getValue().equals(minecraftUUIDString)) {
         // Already verified this Minecraft user to a different Discord user
         return VerificationStatus.MinecraftUserVerified;

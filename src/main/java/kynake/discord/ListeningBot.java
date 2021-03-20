@@ -2,7 +2,7 @@ package kynake.discord;
 
 // Internal
 import kynake.discord.audio.AudioCapture;
-import kynake.minecraft.directionaldiscord.config.Config;
+import kynake.minecraft.directionaldiscord.config.PrivateConfig;
 
 // JDA
 import net.dv8tion.jda.api.JDA;
@@ -34,13 +34,13 @@ public class ListeningBot extends ListenerAdapter {
   public static Guild getGuild() {
     return jda == null?
       null :
-      jda.getGuildById(Config.getServerID());
+      jda.getGuildById(PrivateConfig.getServerID());
   }
 
   public static VoiceChannel getVoiceChannel() {
     return jda == null?
       null :
-      jda.getVoiceChannelById(Config.getVoiceChannelID());
+      jda.getVoiceChannelById(PrivateConfig.getVoiceChannelID());
   }
 
   public static Long getSelfID() {
@@ -54,7 +54,7 @@ public class ListeningBot extends ListenerAdapter {
       voiceChannelHandler = new VoiceChannelHandler();
       commandHandler = new CommandHandler();
 
-      jda = JDABuilder.create(Config.getToken(),
+      jda = JDABuilder.create(PrivateConfig.getToken(),
         GatewayIntent.GUILD_MESSAGES,
         GatewayIntent.GUILD_VOICE_STATES,
         GatewayIntent.DIRECT_MESSAGES

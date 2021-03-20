@@ -6,7 +6,7 @@ import kynake.audio.Utils.Other;
 
 // JDA
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
-
+import net.dv8tion.jda.internal.audio.AudioPacket;
 // Minecraft
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.vector.Vector3d;
@@ -31,11 +31,12 @@ import javax.sound.sampled.SourceDataLine;
  * An audio player that scales sound sample volume based on the radius distance between sources and listener
  */
 public class RadiusAudioPlayer implements AudioPlayer, Runnable {
-  public static double hearingRange = 20;
+  // TODO define these in server config
+  public static double maxDistance = 100;
+  public static double minDistance = 10;
 
-  // TODO: find a better way to get this value without hardcoding it
   // This is the constant size of the byte[]'s sent over by the Discord Bot
-  private static final int bufferSize = 3840;
+  private static final int bufferSize = Audio.BUFFER_SIZE;
   private static final byte[] emptySample = new byte[bufferSize];
 
   private SourceDataLine audioLine;
@@ -142,17 +143,16 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
   }
 
   private double calculateVolumeScalingByDistance(Vector3d source, Vector3d listener) {
-    double distSquared = listener.squareDistanceTo(source);
-    double rangeSquared = (hearingRange * hearingRange);
-    if(distSquared > rangeSquared){
-      return 0;
+    double dist = listener.distanceTo(source);
+    if(dist <= minDistance) {
+      return 1.0d;
     }
 
-    if(distSquared <= 0) {
-      return 1;
+    if(dist >= maxDistance + minDistance) {
+      return 0.0d;
     }
 
-    return 1 - distSquared / rangeSquared;
+    return 1.0d / (dist - minDistance + 1.0d);
   }
 
   private short[] scalePCMSample(byte[] sample, double scaleFactor) {
@@ -187,7 +187,7 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
       // Clamp values of necessary
       if(unboundedSum > Short.MAX_VALUE) { // Overflow
         res[i] = Short.MAX_VALUE;
-      } else if(unboundedSum < Short.MIN_VALUE){ // Underflow
+      } else if(unboundedSum < Short.MIN_VALUE) { // Underflow
         res[i] = Short.MIN_VALUE;
       } else {
         res[i] = (short) unboundedSum;

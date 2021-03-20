@@ -1,7 +1,7 @@
 package kynake.audio;
 
-// JDA
-import net.dv8tion.jda.api.audio.AudioReceiveHandler;
+// Internal
+import kynake.audio.Utils.Audio;
 
 // Minecraft
 import net.minecraft.util.math.vector.Vector3d;
@@ -11,26 +11,21 @@ import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
+
 
 /**
  * Audio player that simply plays the audio without modifications
  */
 public class SimpleAudioPlayer implements AudioPlayer, Runnable {
-
-  // TODO: find a better way to get this value without hardcoding it
-  // This is the constant size of the byte[]'s sent over by the Discord Bot
-  private static final int bufferSize = 3840;
   private SourceDataLine audioLine;
 
   // Written by the Main Thread, Read from by the Audio Thread
   private Queue<byte[]> pcmBuffer = new ConcurrentLinkedQueue<>();
 
   public SimpleAudioPlayer() {
-    audioLine = createDataLine();
+    audioLine = Audio.createDataLine();
     if(audioLine == null) {
       return;
     }
@@ -86,22 +81,5 @@ public class SimpleAudioPlayer implements AudioPlayer, Runnable {
 
     // Closes the AudioDataLine, which in turn causes the Audio Thread to stop running
     audioLine.close();
-  }
-
-  private SourceDataLine createDataLine() {
-    DataLine.Info info = new DataLine.Info(SourceDataLine.class, AudioReceiveHandler.OUTPUT_FORMAT, bufferSize);
-
-    if(!AudioSystem.isLineSupported(info)) {
-      LOGGER.debug("Dataline not supported!", info);
-      return null;
-    }
-
-    try {
-      return (SourceDataLine) AudioSystem.getLine(info);
-    } catch(LineUnavailableException e) {
-      LOGGER.debug("Unable to create SourceDataLine");
-      LOGGER.catching(e);
-      return null;
-    }
   }
 }

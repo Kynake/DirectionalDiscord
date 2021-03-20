@@ -3,10 +3,21 @@ package kynake.audio.Utils;
 // JDA
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 
+// Apache
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 // Java
 import javax.annotation.Nonnull;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
 
 public class Audio {
+  private static final Logger LOGGER = LogManager.getLogger();
+  public static final AudioFormat FORMAT = AudioReceiveHandler.OUTPUT_FORMAT;
   public static final int BUFFER_SIZE = calculateBufferSize();
 
   @Nonnull public static byte[] shortToByteArray(@Nonnull short[] array, boolean isBigEndian) {
@@ -41,9 +52,25 @@ public class Audio {
     return res;
   }
 
+  public static SourceDataLine createDataLine() {
+    DataLine.Info info = new DataLine.Info(SourceDataLine.class, FORMAT, BUFFER_SIZE);
+
+    if(!AudioSystem.isLineSupported(info)) {
+      LOGGER.debug("Dataline not supported!", info);
+      return null;
+    }
+
+    try {
+      return (SourceDataLine) AudioSystem.getLine(info);
+    } catch(LineUnavailableException e) {
+      LOGGER.debug("Unable to create SourceDataLine");
+      LOGGER.catching(e);
+      return null;
+    }
+  }
 
   private static int calculateBufferSize() {
     int ratio = 50; // 20ms (20ms * 50 = 1000ms)
-    return ((int) AudioReceiveHandler.OUTPUT_FORMAT.getSampleRate() / ratio) * AudioReceiveHandler.OUTPUT_FORMAT.getChannels() * (AudioReceiveHandler.OUTPUT_FORMAT.getSampleSizeInBits() / Byte.SIZE);
+    return ((int) FORMAT.getSampleRate() / ratio) * FORMAT.getChannels() * (FORMAT.getSampleSizeInBits() / Byte.SIZE);
   }
 }

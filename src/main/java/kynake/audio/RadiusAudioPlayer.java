@@ -4,11 +4,7 @@ package kynake.audio;
 import kynake.audio.Utils.Audio;
 import kynake.audio.Utils.Other;
 
-// JDA
-import net.dv8tion.jda.api.audio.AudioReceiveHandler;
-import net.dv8tion.jda.internal.audio.AudioPacket;
 // Minecraft
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.vector.Vector3d;
 
 // Java
@@ -22,8 +18,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
@@ -36,14 +30,13 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
   public static double minDistance = 10;
 
   // This is the constant size of the byte[]'s sent over by the Discord Bot
-  private static final int bufferSize = Audio.BUFFER_SIZE;
-  private static final byte[] emptySample = new byte[bufferSize];
+  private static final byte[] emptySample = new byte[Audio.BUFFER_SIZE];
 
   private SourceDataLine audioLine;
   private Map<UUID, ConcurrentLinkedQueue<Sound>> sourceBuffers = new HashMap<>();
 
   public RadiusAudioPlayer() {
-    audioLine = createDataLine();
+    audioLine = Audio.createDataLine();
     if(audioLine == null) {
       return;
     }
@@ -157,7 +150,7 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
 
   private short[] scalePCMSample(byte[] sample, double scaleFactor) {
 
-    short[] shortSample = Audio.byteToShortArray(sample, AudioReceiveHandler.OUTPUT_FORMAT.isBigEndian());
+    short[] shortSample = Audio.byteToShortArray(sample, Audio.FORMAT.isBigEndian());
     for(int i = 0; i < shortSample.length; i++) {
       shortSample[i] = (short) Math.round(shortSample[i] * scaleFactor);
     }
@@ -175,7 +168,7 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
       return null;
     }
 
-    return Audio.shortToByteArray(shortCombined, AudioReceiveHandler.OUTPUT_FORMAT.isBigEndian());
+    return Audio.shortToByteArray(shortCombined, Audio.FORMAT.isBigEndian());
   }
 
   private short[] combineSamples(@Nonnull short[] base, @Nonnull short[] other) {
@@ -195,24 +188,6 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
     }
 
     return res;
-  }
-
-
-  private SourceDataLine createDataLine() {
-    DataLine.Info info = new DataLine.Info(SourceDataLine.class, AudioReceiveHandler.OUTPUT_FORMAT, bufferSize);
-
-    if(!AudioSystem.isLineSupported(info)) {
-      LOGGER.debug("Dataline not supported!", info);
-      return null;
-    }
-
-    try {
-      return (SourceDataLine) AudioSystem.getLine(info);
-    } catch(LineUnavailableException e) {
-      LOGGER.debug("Unable to create SourceDataLine");
-      LOGGER.catching(e);
-      return null;
-    }
   }
 
   // private Vector3d debugSourceLocation(Vector3d source) {

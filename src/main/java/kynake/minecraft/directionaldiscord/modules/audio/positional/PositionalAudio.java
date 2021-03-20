@@ -1,9 +1,5 @@
 package kynake.minecraft.directionaldiscord.modules.audio.positional;
 
-
-import java.util.List;
-import java.util.UUID;
-
 // Internal
 import kynake.minecraft.directionaldiscord.config.Config;
 import kynake.minecraft.directionaldiscord.modules.audio.positional.network.PacketSendPositionalAudio;
@@ -15,6 +11,10 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 // Minecraft
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
+
+// Java
+import java.util.List;
+import java.util.UUID;
 
 public class PositionalAudio {
   private MinecraftServer serverInstance;

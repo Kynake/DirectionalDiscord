@@ -21,10 +21,6 @@ import javax.sound.sampled.SourceDataLine;
  * An audio player that scales sound sample volume based on the radius distance between sources and listener
  */
 public class RadiusAudioPlayer implements AudioPlayer, Runnable {
-  // TODO define these in server config
-  public static double maxDistance = 100;
-  public static double minDistance = 10;
-
   // This is the constant size of the byte[]'s sent over by the Discord Bot
   private static final byte[] emptySample = new byte[Utils.BUFFER_SIZE];
 
@@ -133,15 +129,15 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
 
   private double calculateVolumeScalingByDistance(Vector3d source, Vector3d listener) {
     double dist = listener.distanceTo(source);
-    if(dist <= minDistance) {
+    if(dist <= Utils.minDistance) {
       return 1.0d;
     }
 
-    if(dist >= maxDistance + minDistance) {
+    if(dist >= Utils.maxDistance + Utils.minDistance) {
       return 0.0d;
     }
 
-    return 1.0d / (dist - minDistance + 1.0d);
+    return 1.0d / (dist - Utils.minDistance + 1.0d);
   }
 
   private short[] scalePCMSample(byte[] sample, double scaleFactor) {

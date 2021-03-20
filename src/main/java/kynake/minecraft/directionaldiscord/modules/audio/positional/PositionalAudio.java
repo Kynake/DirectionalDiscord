@@ -1,6 +1,7 @@
 package kynake.minecraft.directionaldiscord.modules.audio.positional;
 
 // Internal
+import kynake.minecraft.directionaldiscord.config.Constants;
 import kynake.minecraft.directionaldiscord.config.PrivateConfig;
 import kynake.minecraft.directionaldiscord.modules.audio.positional.network.PacketSendPositionalAudio;
 import kynake.minecraft.directionaldiscord.network.Networking;
@@ -13,7 +14,6 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
 
 // Java
-import java.util.List;
 import java.util.UUID;
 
 public class PositionalAudio {
@@ -57,7 +57,7 @@ public class PositionalAudio {
   }
 
   private boolean isNearbySpeaker(ServerPlayerEntity listener, ServerPlayerEntity speaker) {
-    double distance = 100 + 10; // TODO define this in server config
+    double distance = Constants.maxDistance + Constants.minDistance;
 
     // Players in different dimensions are not nearby one another
     if(listener.world.getDimensionKey() != speaker.world.getDimensionKey()) {

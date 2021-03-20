@@ -1,5 +1,8 @@
 package kynake.audio;
 
+// Internal
+import kynake.minecraft.directionaldiscord.config.Constants;
+
 // JDA
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 
@@ -23,6 +26,9 @@ public class Utils {
   private static final Logger LOGGER = LogManager.getLogger();
 
   // Audio and JDA
+  public static final double minDistance = Constants.minDistance;
+  public static final double maxDistance = Constants.maxDistance;
+
   public static final AudioFormat FORMAT = AudioReceiveHandler.OUTPUT_FORMAT;
   public static final int BUFFER_SIZE = calculateBufferSize();
 

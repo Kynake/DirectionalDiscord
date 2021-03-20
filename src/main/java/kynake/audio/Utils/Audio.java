@@ -1,9 +1,9 @@
-package kynake.audio;
+package kynake.audio.Utils;
 
 // Java
 import javax.annotation.Nonnull;
 
-public class Utils {
+public class Audio {
   @Nonnull public static byte[] shortToByteArray(@Nonnull short[] array, boolean isBigEndian) {
     byte[] res = new byte[array.length * Short.BYTES];
     if(isBigEndian) {
@@ -35,4 +35,5 @@ public class Utils {
 
     return res;
   }
+
 }

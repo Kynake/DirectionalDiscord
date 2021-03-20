@@ -1,5 +1,9 @@
 package kynake.audio;
 
+// Internal
+import kynake.audio.Utils.Audio;
+import kynake.audio.Utils.Other;
+
 // JDA
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 
@@ -122,7 +126,7 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
   // Audio volume scaling
   @Nullable
   private List<short[]> scaleSamplesVolume() {
-    Vector3d listenerLocation = getListenerLocation();
+    Vector3d listenerLocation = Other.getListenerLocation();
     List<short[]> res = new ArrayList<>(sourceBuffers.size());
     sourceBuffers.forEach((uuid, buffer) -> {
       // Check all sources for buffered audio, unbuffer if existing
@@ -153,7 +157,7 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
 
   private short[] scalePCMSample(byte[] sample, double scaleFactor) {
 
-    short[] shortSample = Utils.byteToShortArray(sample, AudioReceiveHandler.OUTPUT_FORMAT.isBigEndian());
+    short[] shortSample = Audio.byteToShortArray(sample, AudioReceiveHandler.OUTPUT_FORMAT.isBigEndian());
     for(int i = 0; i < shortSample.length; i++) {
       shortSample[i] = (short) Math.round(shortSample[i] * scaleFactor);
     }
@@ -171,7 +175,7 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
       return null;
     }
 
-    return Utils.shortToByteArray(shortCombined, AudioReceiveHandler.OUTPUT_FORMAT.isBigEndian());
+    return Audio.shortToByteArray(shortCombined, AudioReceiveHandler.OUTPUT_FORMAT.isBigEndian());
   }
 
   private short[] combineSamples(@Nonnull short[] base, @Nonnull short[] other) {
@@ -193,11 +197,6 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
     return res;
   }
 
-  // Other
-  @SuppressWarnings({"resource"})
-  private Vector3d getListenerLocation() {
-    return  Minecraft.getInstance().player.getPositionVec();
-  }
 
   private SourceDataLine createDataLine() {
     DataLine.Info info = new DataLine.Info(SourceDataLine.class, AudioReceiveHandler.OUTPUT_FORMAT, bufferSize);

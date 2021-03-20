@@ -1,8 +1,5 @@
 package kynake.audio;
 
-// Internal
-import kynake.audio.Utils.Other;
-
 // JDA
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 
@@ -30,7 +27,7 @@ public class PositionalAudioPlayer implements AudioPlayer {
 
   @Override
   public void playPCMSample(byte[] pcmSample, UUID sourceID, Vector3d sourceLocation) {
-    Vector3d listenerLocation = Other.getListenerLocation();
+    Vector3d listenerLocation = Utils.getListenerLocation();
     LOGGER.debug("Playing pcm at: [{},\t{},\t{}]",   sourceLocation.x,   sourceLocation.y,   sourceLocation.z);
     LOGGER.debug("Listening at:   [{},\t{},\t{}]", listenerLocation.x, listenerLocation.y, listenerLocation.z);
   }

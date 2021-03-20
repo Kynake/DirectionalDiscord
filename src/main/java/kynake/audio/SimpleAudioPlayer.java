@@ -1,8 +1,5 @@
 package kynake.audio;
 
-// Internal
-import kynake.audio.Utils.Audio;
-
 // Minecraft
 import net.minecraft.util.math.vector.Vector3d;
 
@@ -25,7 +22,7 @@ public class SimpleAudioPlayer implements AudioPlayer, Runnable {
   private Queue<byte[]> pcmBuffer = new ConcurrentLinkedQueue<>();
 
   public SimpleAudioPlayer() {
-    audioLine = Audio.createDataLine();
+    audioLine = Utils.createDataLine();
     if(audioLine == null) {
       return;
     }

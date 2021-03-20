@@ -1,9 +1,5 @@
 package kynake.audio;
 
-// Internal
-import kynake.audio.Utils.Audio;
-import kynake.audio.Utils.Other;
-
 // Minecraft
 import net.minecraft.util.math.vector.Vector3d;
 
@@ -30,13 +26,13 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
   public static double minDistance = 10;
 
   // This is the constant size of the byte[]'s sent over by the Discord Bot
-  private static final byte[] emptySample = new byte[Audio.BUFFER_SIZE];
+  private static final byte[] emptySample = new byte[Utils.BUFFER_SIZE];
 
   private SourceDataLine audioLine;
   private Map<UUID, ConcurrentLinkedQueue<Sound>> sourceBuffers = new HashMap<>();
 
   public RadiusAudioPlayer() {
-    audioLine = Audio.createDataLine();
+    audioLine = Utils.createDataLine();
     if(audioLine == null) {
       return;
     }
@@ -120,7 +116,7 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
   // Audio volume scaling
   @Nullable
   private List<short[]> scaleSamplesVolume() {
-    Vector3d listenerLocation = Other.getListenerLocation();
+    Vector3d listenerLocation = Utils.getListenerLocation();
     List<short[]> res = new ArrayList<>(sourceBuffers.size());
     sourceBuffers.forEach((uuid, buffer) -> {
       // Check all sources for buffered audio, unbuffer if existing
@@ -150,7 +146,7 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
 
   private short[] scalePCMSample(byte[] sample, double scaleFactor) {
 
-    short[] shortSample = Audio.byteToShortArray(sample, Audio.FORMAT.isBigEndian());
+    short[] shortSample = Utils.byteToShortArray(sample, Utils.FORMAT.isBigEndian());
     for(int i = 0; i < shortSample.length; i++) {
       shortSample[i] = (short) Math.round(shortSample[i] * scaleFactor);
     }
@@ -168,7 +164,7 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
       return null;
     }
 
-    return Audio.shortToByteArray(shortCombined, Audio.FORMAT.isBigEndian());
+    return Utils.shortToByteArray(shortCombined, Utils.FORMAT.isBigEndian());
   }
 
   private short[] combineSamples(@Nonnull short[] base, @Nonnull short[] other) {

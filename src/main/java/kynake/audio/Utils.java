@@ -1,7 +1,11 @@
-package kynake.audio.Utils;
+package kynake.audio;
 
 // JDA
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
+
+// Minecraft
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.math.vector.Vector3d;
 
 // Apache
 import org.apache.logging.log4j.LogManager;
@@ -15,8 +19,10 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-public class Audio {
+public class Utils {
   private static final Logger LOGGER = LogManager.getLogger();
+
+  // Audio and JDA
   public static final AudioFormat FORMAT = AudioReceiveHandler.OUTPUT_FORMAT;
   public static final int BUFFER_SIZE = calculateBufferSize();
 
@@ -72,5 +78,21 @@ public class Audio {
   private static int calculateBufferSize() {
     int ratio = 50; // 20ms (20ms * 50 = 1000ms)
     return ((int) FORMAT.getSampleRate() / ratio) * FORMAT.getChannels() * (FORMAT.getSampleSizeInBits() / Byte.SIZE);
+  }
+
+  // Minecraft
+  @SuppressWarnings({"resource"})
+  public static Vector3d getListenerLocation() {
+    return  Minecraft.getInstance().player.getPositionVec();
+  }
+
+  @SuppressWarnings({"resource"})
+  public static Vector3d getListenerLook() {
+    return Minecraft.getInstance().player.getLookVec();
+  }
+
+  @SuppressWarnings({"resource"})
+  public static Vector3d getListenerUp() {
+    return Minecraft.getInstance().player.getUpVector(1.0f).normalize();
   }
 }

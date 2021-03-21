@@ -32,6 +32,10 @@ public class Utils {
   public static final AudioFormat FORMAT = AudioReceiveHandler.OUTPUT_FORMAT;
   public static final int BUFFER_SIZE = calculateBufferSize();
 
+  @Nonnull public static byte[] shortToByteArray(@Nonnull short[] array) {
+    return shortToByteArray(array, FORMAT.isBigEndian());
+  }
+
   @Nonnull public static byte[] shortToByteArray(@Nonnull short[] array, boolean isBigEndian) {
     byte[] res = new byte[array.length * Short.BYTES];
     if(isBigEndian) {
@@ -47,6 +51,10 @@ public class Utils {
     }
 
     return res;
+  }
+
+  @Nonnull public static short[] byteToShortArray(@Nonnull byte[] array) {
+    return byteToShortArray(array, FORMAT.isBigEndian());
   }
 
   @Nonnull public static short[] byteToShortArray(@Nonnull byte[] array, boolean isBigEndian) {

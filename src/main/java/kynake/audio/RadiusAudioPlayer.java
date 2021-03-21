@@ -45,7 +45,7 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
     }
 
     // Add current pcm sample to the queue, which gets removed and played in the Audio Thread
-    sourceBuffers.computeIfAbsent(sourceID, k -> new ConcurrentLinkedQueue<Sound>()).add(new Sound(pcmSample, sourceLocation));
+    sourceBuffers.computeIfAbsent(sourceID, k -> new ConcurrentLinkedQueue<Sound>()).add(new Sound(Utils.byteToShortArray(pcmSample), sourceLocation));
   }
 
   @Override
@@ -140,14 +140,13 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
     return 1.0d / (dist - Utils.minDistance + 1.0d);
   }
 
-  private short[] scalePCMSample(byte[] sample, double scaleFactor) {
+  private short[] scalePCMSample(short[] sample, double scaleFactor) {
 
-    short[] shortSample = Utils.byteToShortArray(sample, Utils.FORMAT.isBigEndian());
-    for(int i = 0; i < shortSample.length; i++) {
-      shortSample[i] = (short) Math.round(shortSample[i] * scaleFactor);
+    for(int i = 0; i < sample.length; i++) {
+      sample[i] = (short) Math.round(sample[i] * scaleFactor);
     }
 
-    return shortSample;
+    return sample;
   }
 
   // Audio Combining
@@ -160,7 +159,7 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
       return null;
     }
 
-    return Utils.shortToByteArray(shortCombined, Utils.FORMAT.isBigEndian());
+    return Utils.shortToByteArray(shortCombined);
   }
 
   private short[] combineSamples(@Nonnull short[] base, @Nonnull short[] other) {

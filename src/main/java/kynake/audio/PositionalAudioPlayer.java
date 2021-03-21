@@ -45,7 +45,7 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
     }
 
     // Add current pcm sample to the queue, which gets removed and played in the Audio Thread
-    sourceBuffers.computeIfAbsent(sourceID, k -> new ConcurrentLinkedQueue<Sound>()).add(new Sound(pcmSample, sourceLocation));
+    sourceBuffers.computeIfAbsent(sourceID, k -> new ConcurrentLinkedQueue<Sound>()).add(new Sound(Utils.byteToShortArray(pcmSample), sourceLocation));
   }
 
   @Override
@@ -102,32 +102,44 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
     audioLine.close();
   }
 
-  @Nullable
-  private byte[] generateCombinedSample() {
-    List<short[]> scaledByDistance = scaleSamplesVolume();
+  // Samples
+  @Nullable private byte[] generateCombinedSample() {
+    List<Sound> samplesList = getNextSamples();
+
+    List<Sound> scaledByDistance = scaleSamplesVolume(samplesList);
+    // TODO
+    // List<Sound> pannedSounds = panSamples(scaledByDistance);
+
     byte[] mixedSourcesSample = combineSourceSamples(scaledByDistance);
     return mixedSourcesSample;
   }
 
-  // Audio volume scaling
-  @Nullable
-  private List<short[]> scaleSamplesVolume() {
-    Vector3d listenerLocation = Utils.getListenerLocation();
-    List<short[]> res = new ArrayList<>(sourceBuffers.size());
+  @Nonnull private List<Sound> getNextSamples() {
+    List<Sound> res = new ArrayList<>(sourceBuffers.size());
     sourceBuffers.forEach((uuid, buffer) -> {
       // Check all sources for buffered audio, unbuffer if existing
       Sound sound = buffer.poll();
       if(sound != null) {
-        // If a source has audio, scale it and add to the list of audio to play
-        double volumeScale = calculateVolumeScalingByDistance(sound.sourceLocation, listenerLocation);
-        res.add(scalePCMSample(sound.pcmSample, volumeScale));
+        res.add(sound);
       }
     });
 
     return res;
   }
 
-  private double calculateVolumeScalingByDistance(Vector3d source, Vector3d listener) {
+  // Audio volume scaling
+  @Nonnull private List<Sound> scaleSamplesVolume(@Nonnull List<Sound> samples) {
+    Vector3d listenerLocation = Utils.getListenerLocation();
+    samples.forEach(sound -> {
+      // If a source has audio, scale it and add to the list of audio to play
+      double volumeScale = calculateVolumeScalingByDistance(sound.sourceLocation, listenerLocation);
+      sound.pcmSample = scalePCMSample(sound.pcmSample, volumeScale);
+    });
+
+    return samples;
+  }
+
+  private double calculateVolumeScalingByDistance(@Nonnull Vector3d source, @Nonnull Vector3d listener) {
     double dist = listener.distanceTo(source);
     if(dist <= Utils.minDistance) {
       return 1.0d;
@@ -140,27 +152,28 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
     return 1.0d / (dist - Utils.minDistance + 1.0d);
   }
 
-  private short[] scalePCMSample(byte[] sample, double scaleFactor) {
+  private short[] scalePCMSample(short[] sample, double scaleFactor) {
 
-    short[] shortSample = Utils.byteToShortArray(sample, Utils.FORMAT.isBigEndian());
-    for(int i = 0; i < shortSample.length; i++) {
-      shortSample[i] = (short) Math.round(shortSample[i] * scaleFactor);
+    for(int i = 0; i < sample.length; i++) {
+      sample[i] = (short) Math.round(sample[i] * scaleFactor);
     }
 
-    return shortSample;
+    return sample;
   }
 
+  // Audio Panning
+  // TODO
+
   // Audio Combining
-  @Nullable
-  private byte[] combineSourceSamples(@Nonnull List<short[]> sourceSamples) {
+  @Nullable private byte[] combineSourceSamples(@Nonnull List<Sound> sourceSamples) {
     short[] shortCombined;
     try {
-      shortCombined = sourceSamples.stream().reduce((combined, sample) -> combineSamples(combined, sample)).get();
+      shortCombined = sourceSamples.stream().map(sound -> sound.pcmSample).reduce((combined, sample) -> combineSamples(combined, sample)).get();
     } catch(NoSuchElementException e) {
       return null;
     }
 
-    return Utils.shortToByteArray(shortCombined, Utils.FORMAT.isBigEndian());
+    return Utils.shortToByteArray(shortCombined);
   }
 
   private short[] combineSamples(@Nonnull short[] base, @Nonnull short[] other) {
@@ -181,4 +194,9 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
 
     return res;
   }
+
+  // Debug
+  // private Vector3d debugSourceLocation(Vector3d source) {
+  //   return source.add(25, 0, 0);
+  // }
 }

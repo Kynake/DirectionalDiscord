@@ -39,7 +39,7 @@ public class ClientSetup {
     if(clientPlayer == null) {
       // Start Audio Player
       LOGGER.info("Starting new AudioPlayer");
-      clientPlayer = new RadiusAudioPlayer();
+      clientPlayer = new PositionalAudioPlayer();
     }
   }
 

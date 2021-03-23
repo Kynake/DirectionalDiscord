@@ -46,6 +46,10 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
 
     // Add current pcm sample to the queue, which gets removed and played in the Audio Thread
     sourceBuffers.computeIfAbsent(sourceID, k -> new ConcurrentLinkedQueue<Sound>()).add(new Sound(Utils.byteToShortArray(pcmSample), sourceLocation));
+
+    // Debug
+    // sourceBuffers.computeIfAbsent(sourceID, k -> new ConcurrentLinkedQueue<Sound>()).add(new Sound(Utils.byteToShortArray(pcmSample), debugSourceLocation(sourceLocation)));
+
   }
 
   @Override
@@ -107,10 +111,9 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
     List<Sound> samplesList = getNextSamples();
 
     List<Sound> scaledByDistance = scaleSamplesVolume(samplesList);
-    // TODO
-    // List<Sound> pannedSounds = panSamples(scaledByDistance);
+    List<Sound> pannedSounds = panSamples(scaledByDistance);
 
-    byte[] mixedSourcesSample = combineSourceSamples(scaledByDistance);
+    byte[] mixedSourcesSample = combineSourceSamples(pannedSounds);
     return mixedSourcesSample;
   }
 
@@ -162,7 +165,46 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
   }
 
   // Audio Panning
-  // TODO
+  @Nonnull private List<Sound> panSamples(@Nonnull List<Sound> samples) {
+    Vector3d listenerLocation = Utils.getListenerLocation();
+    Vector3d listenerForward = Utils.getListenerForward();
+
+    samples.forEach(sound -> {
+      if(listenerLocation.squareDistanceTo(sound.sourceLocation) == 0) {
+        return;
+      }
+
+      // Calculate vector that points from listener to source, not considering the vertical component Y
+      Vector3d sourceDirection = (new Vector3d(sound.sourceLocation.x, listenerLocation.y, sound.sourceLocation.z)).subtract(listenerLocation);
+
+      // 90 Degree clockwise rotation
+      Vector3d rotationBase = listenerForward.rotateYaw((float) -(Math.PI / 2.0d));
+
+      double radiansFromBase = Utils.vectorAngle(rotationBase, sourceDirection); // Angle from base, from 0 to PI
+      double angleFactor = radiansFromBase / Math.PI; // Angle from base, from 0 to 1
+
+      sound.pcmSample = applyPanning(sound.pcmSample, angleFactor);
+    });
+
+    return samples;
+  }
+
+  @Nonnull private short[] applyPanning(@Nonnull short[] pcmSample, double angleFactor) {
+    double strengthFactor = angleFactor * (Math.PI / 2.0d);
+
+    double leftPan = Math.sin(angleFactor * strengthFactor);
+    double rightPan = Math.cos(angleFactor * strengthFactor);
+
+    for(int i = 0; i < pcmSample.length; i++) {
+      if(i % 2 == 0) { // Left Channel
+        pcmSample[i] *= leftPan;
+      } else { // Right Channel
+        pcmSample[i] *= rightPan;
+      }
+    }
+
+    return pcmSample;
+  }
 
   // Audio Combining
   @Nullable private byte[] combineSourceSamples(@Nonnull List<Sound> sourceSamples) {
@@ -176,7 +218,7 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
     return Utils.shortToByteArray(shortCombined);
   }
 
-  private short[] combineSamples(@Nonnull short[] base, @Nonnull short[] other) {
+  @Nonnull private short[] combineSamples(@Nonnull short[] base, @Nonnull short[] other) {
     short[] res = new short[Math.min(base.length, other.length)];
     for(int i = 0; i < res.length; i++) {
       // Cast shorts to ints to catch possible over/underflows
@@ -197,6 +239,6 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
 
   // Debug
   // private Vector3d debugSourceLocation(Vector3d source) {
-  //   return source.add(25, 0, 0);
+  //   return new Vector3d(0, 64, 0);
   // }
 }

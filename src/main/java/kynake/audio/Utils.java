@@ -109,4 +109,18 @@ public class Utils {
   public static Vector3d getListenerUp() {
     return Minecraft.getInstance().player.getUpVector(1.0f).normalize();
   }
+
+  @SuppressWarnings({"resource"})
+  public static Vector3d getListenerForward() {
+    return Vector3d.fromPitchYaw(0, Minecraft.getInstance().player.getYaw(1));
+  }
+
+  // Math
+
+  /**
+   * Make sure that NEITHER vector is the ZERO vector, else you'll get a division by zero
+   */
+  public static double vectorAngle(Vector3d x, Vector3d y) {
+    return Math.acos(x.dotProduct(y)/(x.length() * y.length()));
+  }
 }

@@ -130,7 +130,7 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
     return res;
   }
 
-  // Audio volume scaling
+  // Gain (Unpanned)
   @Nonnull private List<Sound> scaleSamplesVolume(@Nonnull List<Sound> samples) {
     Vector3d listenerLocation = Utils.getListenerLocation();
     samples.forEach(sound -> {
@@ -164,7 +164,7 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
     return sample;
   }
 
-  // Audio Panning
+  // Pan
   @Nonnull private List<Sound> panSamples(@Nonnull List<Sound> samples) {
     Vector3d listenerLocation = Utils.getListenerLocation();
     Vector3d listenerForward = Utils.getListenerForward();
@@ -190,10 +190,14 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
   }
 
   @Nonnull private short[] applyPanning(@Nonnull short[] pcmSample, double angleFactor) {
-    double strengthFactor = angleFactor * (Math.PI / 2.0d);
+    double strengthFactor = angleFactor * (Math.PI / 2.0D);
 
-    double leftPan = Math.sin(angleFactor * strengthFactor);
-    double rightPan = Math.cos(angleFactor * strengthFactor);
+    // We assume the unpanned GAIN is Always 1, or has already been adjusted
+    // TODO Set Panned Gain here directly without pre adjustments
+    double leftPan = Math.sin(strengthFactor);
+    double rightPan = Math.cos(strengthFactor);
+
+    // LOGGER.debug("Pan Factor: {}, Left Pan: {}, Right Pan: {}", angleFactor, leftPan, rightPan);
 
     for(int i = 0; i < pcmSample.length; i++) {
       if(i % 2 == 0) { // Left Channel

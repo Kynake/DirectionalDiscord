@@ -167,23 +167,26 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
   // Pan
   @Nonnull private List<Sound> panSamples(@Nonnull List<Sound> samples) {
     Vector3d listenerLocation = Utils.getListenerLocation();
-    Vector3d listenerForward = Utils.getListenerForward();
+
+    Vector3d listenerLook = Utils.getListenerLook(); // Z Vector
+    Vector3d listenerUp = Utils.getListenerUp(); // Y Vector
+    Vector3d listenerSide = listenerUp.crossProduct(listenerLook).normalize(); // X Vector
 
     samples.forEach(sound -> {
       if(listenerLocation.squareDistanceTo(sound.sourceLocation) == 0) {
         return;
       }
 
-      // Calculate vector that points from listener to source, not considering the vertical component Y
-      Vector3d sourceDirection = (new Vector3d(sound.sourceLocation.x, listenerLocation.y, sound.sourceLocation.z)).subtract(listenerLocation);
+      // Calculate the X and Z magnitudes of the Sound Source relative to the Listener position
+      Vector3d sourceDirection = sound.sourceLocation.subtract(listenerLocation);
+      double sourceX = sourceDirection.dotProduct(listenerSide);
+      double sourceZ = sourceDirection.dotProduct(listenerLook);
 
-      // 90 Degree clockwise rotation
-      Vector3d rotationBase = listenerForward.rotateYaw((float) -(Math.PI / 2.0d));
+      double angle = Math.atan2(sourceX, sourceZ);
+      double unfactoredPan = Math.sin(angle); // from -1 to 1
+      double panFactor = (unfactoredPan + 1.0D) / 2.0D;
 
-      double radiansFromBase = Utils.vectorAngle(rotationBase, sourceDirection); // Angle from base, from 0 to PI
-      double angleFactor = radiansFromBase / Math.PI; // Angle from base, from 0 to 1
-
-      sound.pcmSample = applyPanning(sound.pcmSample, angleFactor);
+      sound.pcmSample = applyPanning(sound.pcmSample, panFactor);
     });
 
     return samples;
@@ -242,7 +245,7 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
   }
 
   // Debug
-  // private Vector3d debugSourceLocation(Vector3d source) {
-  //   return new Vector3d(0, 64, 0);
-  // }
+  private Vector3d debugSourceLocation(Vector3d source) {
+    return new Vector3d(0, 64, 0);
+  }
 }

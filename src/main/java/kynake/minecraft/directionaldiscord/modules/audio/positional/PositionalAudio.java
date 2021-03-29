@@ -57,7 +57,7 @@ public class PositionalAudio {
   }
 
   private boolean isNearbySpeaker(ServerPlayerEntity listener, ServerPlayerEntity speaker) {
-    double distance = Constants.maxDistance + Constants.minDistance;
+    double distance = Constants.maxDistance;
 
     // Players in different dimensions are not nearby one another
     if(listener.world.getDimensionKey() != speaker.world.getDimensionKey()) {

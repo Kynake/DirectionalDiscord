@@ -28,6 +28,8 @@ public class Utils {
   // Audio and JDA
   public static final double minDistance = Constants.minDistance;
   public static final double maxDistance = Constants.maxDistance;
+  public static final double falloffFactor = Constants.falloffFactor;
+  public static final double fadeoutDistance = Constants.fadeoutDistance;
 
   public static final AudioFormat FORMAT = AudioReceiveHandler.OUTPUT_FORMAT;
   public static final int BUFFER_SIZE = calculateBufferSize();

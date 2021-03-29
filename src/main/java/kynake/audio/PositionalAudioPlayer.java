@@ -148,11 +148,16 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
       return 1.0d;
     }
 
-    if(dist >= Utils.maxDistance + Utils.minDistance) {
+    if(dist >= Utils.maxDistance) {
       return 0.0d;
     }
 
-    return 1.0d / (dist - Utils.minDistance + 1.0d);
+    if(dist >= Utils.maxDistance - Utils.fadeoutDistance) {
+      double baseFactor = Utils.falloffFactor / (Utils.maxDistance - Utils.fadeoutDistance - Utils.minDistance + Utils.falloffFactor);
+      return baseFactor * (1.0d - ((dist - Utils.maxDistance + Utils.fadeoutDistance) / Utils.fadeoutDistance));
+    }
+
+    return Utils.falloffFactor / (dist - Utils.minDistance + Utils.falloffFactor);
   }
 
   private short[] scalePCMSample(short[] sample, double scaleFactor) {

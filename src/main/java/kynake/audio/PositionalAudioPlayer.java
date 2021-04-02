@@ -188,6 +188,8 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
   }
 
   @Nonnull private short[] scaleDistanceAndPan(@Nonnull short[] pcmSample, double angleFactor, double distanceFactor) {
+    // TODO: interpolate volume between this' and last sample's volume to avoid clicks on sudden changes
+    // E.G. Fast head rotations (PAN) and players moving very quickly (DISTANCE)
     double strengthFactor = angleFactor * (Math.PI / 2.0D);
 
     double leftPanVolume = Math.sin(strengthFactor) * distanceFactor;

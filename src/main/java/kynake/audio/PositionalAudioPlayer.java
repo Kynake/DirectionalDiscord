@@ -144,19 +144,24 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
 
   private double calculateVolumeScalingByDistance(@Nonnull Vector3d source, @Nonnull Vector3d listener) {
     double dist = listener.distanceTo(source);
+
+    // Full Volume when distance is less than Minimum
     if(dist <= Utils.minDistance) {
       return 1.0d;
     }
 
+    // No Sound when distance is greter that Maximum
     if(dist >= Utils.maxDistance) {
       return 0.0d;
     }
 
+    // Linearly interpolate to zero when distance is very close to the Maximum
     if(dist >= Utils.maxDistance - Utils.fadeoutDistance) {
       double baseFactor = Utils.falloffFactor / (Utils.maxDistance - Utils.fadeoutDistance - Utils.minDistance + Utils.falloffFactor);
       return baseFactor * (1.0d - ((dist - Utils.maxDistance + Utils.fadeoutDistance) / Utils.fadeoutDistance));
     }
 
+    // Default logarithmic interpolation
     return Utils.falloffFactor / (dist - Utils.minDistance + Utils.falloffFactor);
   }
 
@@ -189,7 +194,7 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
 
       double angle = Math.atan2(sourceX, sourceZ);
       double unfactoredPan = Math.sin(angle); // from -1 to 1
-      double panFactor = (unfactoredPan + 1.0D) / 2.0D;
+      double panFactor = (unfactoredPan + 1.0D) / 2.0D; // from 0 to 1
 
       sound.pcmSample = applyPanning(sound.pcmSample, panFactor);
     });

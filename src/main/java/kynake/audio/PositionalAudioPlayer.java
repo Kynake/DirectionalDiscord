@@ -110,10 +110,9 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
   @Nullable private byte[] generateCombinedSample() {
     List<Sound> samplesList = getNextSamples();
 
-    List<Sound> scaledByDistance = scaleSamplesVolume(samplesList);
-    List<Sound> pannedSounds = panSamples(scaledByDistance);
+    List<Sound> scaledSamples = scaleVolumes(samplesList);
 
-    byte[] mixedSourcesSample = combineSourceSamples(pannedSounds);
+    byte[] mixedSourcesSample = combineSourceSamples(scaledSamples);
     return mixedSourcesSample;
   }
 
@@ -130,19 +129,42 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
     return res;
   }
 
-  // Gain (Unpanned)
-  @Nonnull private List<Sound> scaleSamplesVolume(@Nonnull List<Sound> samples) {
+  // Audio Volume Scaling (PAN & DISTANCE)
+  @Nonnull private List<Sound> scaleVolumes(@Nonnull List<Sound> samples) {
     Vector3d listenerLocation = Utils.getListenerLocation();
+
+    Vector3d listenerLook = Utils.getListenerLook(); // Z Vector
+    Vector3d listenerUp = Utils.getListenerUp(); // Y Vector
+    Vector3d listenerSide = listenerUp.crossProduct(listenerLook).normalize(); // X Vector
+
     samples.forEach(sound -> {
-      // If a source has audio, scale it and add to the list of audio to play
-      double volumeScale = calculateVolumeScalingByDistance(sound.sourceLocation, listenerLocation);
-      sound.pcmSample = scalePCMSample(sound.pcmSample, volumeScale);
+      if(listenerLocation.squareDistanceTo(sound.sourceLocation) == 0) {
+        return;
+      }
+
+      double panFactor = calculatePanFactor(sound.sourceLocation, listenerLocation, listenerLook, listenerSide);
+      double distanceFactor = calculateDistanceFactor(sound.sourceLocation, listenerLocation);
+
+      sound.pcmSample = scaleDistanceAndPan(sound.pcmSample, panFactor, distanceFactor);
     });
 
     return samples;
   }
 
-  private double calculateVolumeScalingByDistance(@Nonnull Vector3d source, @Nonnull Vector3d listener) {
+  private double calculatePanFactor(@Nonnull Vector3d source, @Nonnull Vector3d listenerPosition, @Nonnull Vector3d listenerDirection, @Nonnull Vector3d listenerSide) {
+    // Calculate the X and Z magnitudes of the Sound Source relative to the Listener position
+    Vector3d sourceDirection = source.subtract(listenerPosition);
+    double sourceX = sourceDirection.dotProduct(listenerSide);
+    double sourceZ = sourceDirection.dotProduct(listenerDirection);
+
+    double angle = Math.atan2(sourceX, sourceZ);
+    double unfactoredPan = Math.sin(angle); // from -1 to 1
+    double panFactor = (unfactoredPan + 1.0D) / 2.0D; // from 0 to 1
+
+    return panFactor;
+  }
+
+  private double calculateDistanceFactor(@Nonnull Vector3d source, @Nonnull Vector3d listener) {
     double dist = listener.distanceTo(source);
 
     // Full Volume when distance is less than Minimum
@@ -165,58 +187,20 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
     return Utils.falloffFactor / (dist - Utils.minDistance + Utils.falloffFactor);
   }
 
-  private short[] scalePCMSample(short[] sample, double scaleFactor) {
-
-    for(int i = 0; i < sample.length; i++) {
-      sample[i] = (short) Math.round(sample[i] * scaleFactor);
-    }
-
-    return sample;
-  }
-
-  // Pan
-  @Nonnull private List<Sound> panSamples(@Nonnull List<Sound> samples) {
-    Vector3d listenerLocation = Utils.getListenerLocation();
-
-    Vector3d listenerLook = Utils.getListenerLook(); // Z Vector
-    Vector3d listenerUp = Utils.getListenerUp(); // Y Vector
-    Vector3d listenerSide = listenerUp.crossProduct(listenerLook).normalize(); // X Vector
-
-    samples.forEach(sound -> {
-      if(listenerLocation.squareDistanceTo(sound.sourceLocation) == 0) {
-        return;
-      }
-
-      // Calculate the X and Z magnitudes of the Sound Source relative to the Listener position
-      Vector3d sourceDirection = sound.sourceLocation.subtract(listenerLocation);
-      double sourceX = sourceDirection.dotProduct(listenerSide);
-      double sourceZ = sourceDirection.dotProduct(listenerLook);
-
-      double angle = Math.atan2(sourceX, sourceZ);
-      double unfactoredPan = Math.sin(angle); // from -1 to 1
-      double panFactor = (unfactoredPan + 1.0D) / 2.0D; // from 0 to 1
-
-      sound.pcmSample = applyPanning(sound.pcmSample, panFactor);
-    });
-
-    return samples;
-  }
-
-  @Nonnull private short[] applyPanning(@Nonnull short[] pcmSample, double angleFactor) {
+  @Nonnull private short[] scaleDistanceAndPan(@Nonnull short[] pcmSample, double angleFactor, double distanceFactor) {
     double strengthFactor = angleFactor * (Math.PI / 2.0D);
 
-    // We assume the unpanned GAIN is Always 1, or has already been adjusted
-    // TODO Set Panned Gain here directly without pre adjustments
-    double leftPan = Math.sin(strengthFactor);
-    double rightPan = Math.cos(strengthFactor);
+    double leftPanVolume = Math.sin(strengthFactor) * distanceFactor;
+    double rightPanVolume = Math.cos(strengthFactor) * distanceFactor;
 
     // LOGGER.debug("Pan Factor: {}, Left Pan: {}, Right Pan: {}", angleFactor, leftPan, rightPan);
 
+    // PCM Samples encodes left and right channel audio one short after the another, in a mixed manner
     for(int i = 0; i < pcmSample.length; i++) {
       if(i % 2 == 0) { // Left Channel
-        pcmSample[i] *= leftPan;
+        pcmSample[i] *= leftPanVolume;
       } else { // Right Channel
-        pcmSample[i] *= rightPan;
+        pcmSample[i] *= rightPanVolume;
       }
     }
 

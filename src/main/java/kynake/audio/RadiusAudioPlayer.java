@@ -1,5 +1,8 @@
 package kynake.audio;
 
+// Internal
+import kynake.minecraft.directionaldiscord.config.Constants;
+
 // Minecraft
 import net.minecraft.util.math.vector.Vector3d;
 
@@ -129,15 +132,15 @@ public class RadiusAudioPlayer implements AudioPlayer, Runnable {
 
   private double calculateVolumeScalingByDistance(Vector3d source, Vector3d listener) {
     double dist = listener.distanceTo(source);
-    if(dist <= Utils.minDistance) {
+    if(dist <= Constants.minDistance) {
       return 1.0d;
     }
 
-    if(dist >= Utils.maxDistance + Utils.minDistance) {
+    if(dist >= Constants.maxDistance + Constants.minDistance) {
       return 0.0d;
     }
 
-    return 1.0d / (dist - Utils.minDistance + 1.0d);
+    return 1.0d / (dist - Constants.minDistance + 1.0d);
   }
 
   private short[] scalePCMSample(short[] sample, double scaleFactor) {

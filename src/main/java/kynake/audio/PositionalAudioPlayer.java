@@ -1,5 +1,8 @@
 package kynake.audio;
 
+// Internal
+import kynake.minecraft.directionaldiscord.config.Constants;
+
 // Minecraft
 import net.minecraft.util.math.vector.Vector3d;
 
@@ -168,23 +171,23 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
     double dist = listener.distanceTo(source);
 
     // Full Volume when distance is less than Minimum
-    if(dist <= Utils.minDistance) {
+    if(dist <= Constants.minDistance) {
       return 1.0d;
     }
 
     // No Sound when distance is greter that Maximum
-    if(dist >= Utils.maxDistance) {
+    if(dist >= Constants.maxDistance) {
       return 0.0d;
     }
 
     // Linearly interpolate to zero when distance is very close to the Maximum
-    if(dist >= Utils.maxDistance - Utils.fadeoutDistance) {
-      double baseFactor = Utils.falloffFactor / (Utils.maxDistance - Utils.fadeoutDistance - Utils.minDistance + Utils.falloffFactor);
-      return baseFactor * (1.0d - ((dist - Utils.maxDistance + Utils.fadeoutDistance) / Utils.fadeoutDistance));
+    if(dist >= Constants.maxDistance - Constants.fadeoutDistance) {
+      double baseFactor = Constants.falloffFactor / (Constants.maxDistance - Constants.fadeoutDistance - Constants.minDistance + Constants.falloffFactor);
+      return baseFactor * (1.0d - ((dist - Constants.maxDistance + Constants.fadeoutDistance) / Constants.fadeoutDistance));
     }
 
     // Default logarithmic interpolation
-    return Utils.falloffFactor / (dist - Utils.minDistance + Utils.falloffFactor);
+    return Constants.falloffFactor / (dist - Constants.minDistance + Constants.falloffFactor);
   }
 
   @Nonnull private short[] scaleDistanceAndPan(@Nonnull short[] pcmSample, double angleFactor, double distanceFactor) {

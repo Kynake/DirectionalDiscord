@@ -29,10 +29,18 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
 
   private SourceDataLine audioLine;
   private Map<UUID, ConcurrentLinkedQueue<Sound>> sourceBuffers = new HashMap<>();
+  private Map<UUID, Double> lastSampleVolumes = new HashMap<>();
 
   public PositionalAudioPlayer() {
     audioLine = Utils.createDataLine();
     if(audioLine == null) {
+      LOGGER.fatal("Could not create an AudioDataLine for PositionalAudioPlayer");
+      return;
+    }
+
+    if(Constants.volumeInterpolateAmount >= Utils.BUFFER_SIZE) {
+      LOGGER.fatal("Can only interpolate less samples than the size of a buffer: Interpolate: {}, Buffer Size: {}", Constants.volumeInterpolateAmount, Utils.BUFFER_SIZE);
+      audioLine.close();
       return;
     }
 
@@ -48,10 +56,10 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
     }
 
     // Add current pcm sample to the queue, which gets removed and played in the Audio Thread
-    sourceBuffers.computeIfAbsent(sourceID, k -> new ConcurrentLinkedQueue<Sound>()).add(new Sound(Utils.byteToShortArray(pcmSample), sourceLocation));
+    sourceBuffers.computeIfAbsent(sourceID, k -> new ConcurrentLinkedQueue<Sound>()).add(new Sound(sourceID, Utils.byteToShortArray(pcmSample), sourceLocation));
 
     // Debug
-    // sourceBuffers.computeIfAbsent(sourceID, k -> new ConcurrentLinkedQueue<Sound>()).add(new Sound(Utils.byteToShortArray(pcmSample), debugSourceLocation(sourceLocation)));
+    // sourceBuffers.computeIfAbsent(sourceID, k -> new ConcurrentLinkedQueue<Sound>()).add(new Sound(sourceID, Utils.byteToShortArray(pcmSample), debugSourceLocation(sourceLocation)));
 
   }
 
@@ -148,7 +156,9 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
       double panFactor = calculatePanFactor(sound.sourceLocation, listenerLocation, listenerLook, listenerSide);
       double distanceFactor = calculateDistanceFactor(sound.sourceLocation, listenerLocation);
 
-      sound.pcmSample = scaleDistanceAndPan(sound.pcmSample, panFactor, distanceFactor);
+      double lastVolume = lastSampleVolumes.getOrDefault(sound.source, 0.0d);
+
+      sound.pcmSample = scaleDistanceAndPan(sound.pcmSample, panFactor, distanceFactor, lastVolume, sound.source);
     });
 
     return samples;
@@ -190,10 +200,14 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
     return Constants.falloffFactor / (dist - Constants.minDistance + Constants.falloffFactor);
   }
 
-  @Nonnull private short[] scaleDistanceAndPan(@Nonnull short[] pcmSample, double angleFactor, double distanceFactor) {
+  @Nonnull private short[] scaleDistanceAndPan(@Nonnull short[] pcmSample, double angleFactor, double distanceFactor, double lastVolumeScale, UUID sourceUUID) {
     // TODO: interpolate volume between this' and last sample's volume to avoid clicks on sudden changes
     // E.G. Fast head rotations (PAN) and players moving very quickly (DISTANCE)
     double strengthFactor = angleFactor * (Math.PI / 2.0D);
+
+    for(int i = 0; i < Constants.volumeInterpolateAmount; i++) {
+      // double interpolatedStrength = lastVolumeScale *
+    }
 
     double leftPanVolume = Math.sin(strengthFactor) * distanceFactor;
     double rightPanVolume = Math.cos(strengthFactor) * distanceFactor;
@@ -201,13 +215,15 @@ public class PositionalAudioPlayer implements AudioPlayer, Runnable {
     // LOGGER.debug("Pan Factor: {}, Left Pan: {}, Right Pan: {}", angleFactor, leftPan, rightPan);
 
     // PCM Samples encodes left and right channel audio one short after the another, in a mixed manner
-    for(int i = 0; i < pcmSample.length; i++) {
+    for(int i = Constants.volumeInterpolateAmount; i < pcmSample.length; i++) {
       if(i % 2 == 0) { // Left Channel
         pcmSample[i] *= leftPanVolume;
       } else { // Right Channel
         pcmSample[i] *= rightPanVolume;
       }
     }
+
+    lastSampleVolumes.put(sourceUUID, strengthFactor);
 
     return pcmSample;
   }
